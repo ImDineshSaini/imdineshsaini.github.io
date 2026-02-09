@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leading AI Adoption — Dinesh Saini</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../blog.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <nav class="nav scrolled">
+    <div class="container nav-inner">
+      <a href="../index.html" class="nav-logo">dinesh<span>saini</span></a>
+      <ul class="nav-links"><li><a href="../blog.html">← Back to Writing</a></li></ul>
+    </div>
+  </nav>
+
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-date">September 14, 2025</span>
+      <span class="article-category">Leadership</span>
+    </div>
+    <h1>Leading AI Adoption: Getting Engineers Excited About LLMs</h1>
+  </header>
+
+  <article class="article-content">
+    <div class="container">
+
+      <p>When I started the Engineering AI Hub at SBS, half the team was skeptical. "It's just autocomplete," they said. "It writes buggy code." "It'll replace us."</p>
+
+      <p>Six months later, we've built tools that reduced development effort by 30%. Engineers who were skeptical are now our biggest advocates. Here's how we turned skeptics into believers.</p>
+
+      <h2>The Resistance Was Real</h2>
+
+      <p>The first AI Hub meeting had 8 people. Five came out of obligation. The energy was... underwhelming.</p>
+
+      <p>I understood the resistance. Engineers had seen AI hype before. Every year, something is the "next big thing." Most fade into irrelevance.</p>
+
+      <p>LLMs felt different to me, but I couldn't expect everyone to just believe that. I needed to <strong>show</strong>, not tell.</p>
+
+      <h2>Strategy 1: Start With Pain Points</h2>
+
+      <p>I didn't start by teaching LLM theory. I started by asking: "What's annoying in your workflow?"</p>
+
+      <p>The answers came fast:</p>
+      <ul>
+        <li>"Writing API documentation is tedious"</li>
+        <li>"Code reviews take forever for obvious stuff"</li>
+        <li>"Breaking down user stories into tasks is repetitive"</li>
+        <li>"Debugging error logs is time-consuming"</li>
+      </ul>
+
+      <p>Perfect. Those became our first AI projects.</p>
+
+      <div class="diagram">
+        <p class="diagram-title">AI Adoption Strategy</p>
+        <div class="flow-diagram">
+          <div class="flow-node">Identify Pain Points</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Build Quick Wins</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Gather Feedback</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Scale What Works</div>
+        </div>
+      </div>
+
+      <h2>Strategy 2: Build Something Useful in Week 1</h2>
+
+      <p>We built our first tool in a week: an API documentation generator.</p>
+
+      <p>Point it at a Ruby on Rails controller, it generates markdown docs with endpoints, parameters, and example responses. Not perfect, but 80% of the work done automatically.</p>
+
+      <p><strong>Technical Implementation:</strong></p>
+      <pre><code>require 'openai'
+
+def generate_docs(controller_file)
+  code = File.read(controller_file)
+  
+  prompt = <<~PROMPT
+    Analyze this Rails controller and generate API documentation.
+    Include: endpoint URLs, HTTP methods, parameters, responses.
+    
+    Controller code:
+    #{code}
+  PROMPT
+
+  client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
+  response = client.chat(
+    parameters: {
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }]
+    }
+  )
+
+  response.dig("choices", 0, "message", "content")
+end
+</code></pre>
+
+      <p>Engineers tried it. It worked. Suddenly, AI wasn't theoretical—it was saving them time.</p>
+
+      <p><strong>Try it yourself:</strong></p>
+      <ul>
+        <li>OpenAI API Docs: <a href="https://platform.openai.com/docs" target="_blank" style="color: var(--primary);">https://platform.openai.com/docs</a></li>
+        <li>Ruby OpenAI Gem: <a href="https://github.com/alexrudall/ruby-openai" target="_blank" style="color: var(--primary);">https://github.com/alexrudall/ruby-openai</a></li>
+      </ul>
+
+      <h2>Strategy 3: Make It Easy to Experiment</h2>
+
+      <p>We created an internal AI Playground—a web interface where engineers could test prompts without writing code.</p>
+
+      <p>Features:</p>
+      <ul>
+        <li>Pre-built prompt templates for common tasks</li>
+        <li>Model comparison (GPT-4 vs GPT-3.5 vs Claude)</li>
+        <li>Cost calculator (shows API cost per request)</li>
+        <li>Save and share successful prompts</li>
+      </ul>
+
+      <p>Within two weeks, 40 engineers had experimented with LLMs. They shared their successes in Slack. The momentum built organically.</p>
+
+      <h2>Strategy 4: Address Fears Head-On</h2>
+
+      <p>"Will AI replace us?" This question came up constantly.</p>
+
+      <p>I gave an honest answer: <strong>AI won't replace engineers. Engineers who use AI will replace engineers who don't.</strong></p>
+
+      <p>Then I showed data:</p>
+      <ul>
+        <li>Our MR Review Agent didn't reduce reviewer headcount—it freed reviewers to focus on architecture instead of syntax</li>
+        <li>Documentation tools didn't eliminate tech writers—they let writers focus on tutorials instead of API refs</li>
+        <li>Code generation helped juniors ramp up faster—seniors mentored more people</li>
+      </ul>
+
+      <p>AI augmented us. It didn't replace us.</p>
+
+      <h2>Strategy 5: Run Internal Workshops</h2>
+
+      <p>We ran monthly AI workshops:</p>
+      <ul>
+        <li><strong>Month 1</strong>: Prompt engineering basics</li>
+        <li><strong>Month 2</strong>: Building with OpenAI API</li>
+        <li><strong>Month 3</strong>: RAG pipelines for document search</li>
+        <li><strong>Month 4</strong>: Fine-tuning models for domain tasks</li>
+      </ul>
+
+      <p>Each workshop was 2 hours: 30 min theory, 90 min hands-on coding.</p>
+
+      <p>The key: <strong>real projects, not toy examples</strong>. In Month 2, we built a Slack bot that answers DevOps questions using our internal docs.</p>
+
+      <p><strong>Workshop Resources:</strong></p>
+      <ul>
+        <li>Prompt Engineering Guide: <a href="https://www.promptingguide.ai/" target="_blank" style="color: var(--primary);">https://www.promptingguide.ai/</a></li>
+        <li>LangChain Tutorials: <a href="https://python.langchain.com/docs/get_started" target="_blank" style="color: var(--primary);">https://python.langchain.com/docs</a></li>
+        <li>OpenAI Cookbook: <a href="https://cookbook.openai.com/" target="_blank" style="color: var(--primary);">https://cookbook.openai.com/</a></li>
+      </ul>
+
+      <h2>Strategy 6: Celebrate Wins Publicly</h2>
+
+      <p>Every time an AI tool shipped, we shared it company-wide:</p>
+      <ul>
+        <li>Demo in all-hands meetings</li>
+        <li>Write-up in engineering blog</li>
+        <li>Shout-outs in Slack #engineering channel</li>
+      </ul>
+
+      <p>Recognition motivated teams. Other teams saw success and wanted in.</p>
+
+      <h2>The Tools We Built</h2>
+
+      <div class="diagram">
+        <p class="diagram-title">AI Hub Tools Ecosystem</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">MR Review Agent</div>
+            <div class="arch-layer-desc">Automated code review feedback. 2000+ MRs reviewed.</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">API Doc Generator</div>
+            <div class="arch-layer-desc">Auto-generate docs from code. Saved 20hrs/week.</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">Story Breakdown Agent</div>
+            <div class="arch-layer-desc">Converts user stories to technical tasks.</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">DevOps Q&A Bot</div>
+            <div class="arch-layer-desc">RAG-powered Slack bot for infrastructure questions.</div>
+          </div>
+        </div>
+      </div>
+
+      <p>Each tool followed the same pattern: solve a real pain point, ship fast, iterate based on feedback.</p>
+
+      <h2>Measuring Success</h2>
+
+      <p>We tracked:</p>
+      <ul>
+        <li><strong>Tool adoption</strong>: % of engineers using AI tools monthly (started 15%, now 78%)</li>
+        <li><strong>Time saved</strong>: Self-reported hours saved per week (avg 3.5 hours/engineer)</li>
+        <li><strong>Satisfaction</strong>: Quarterly survey on AI tool usefulness (4.2/5 rating)</li>
+        <li><strong>Experimentation</strong>: # of new AI experiments started (12 in Q1, 34 in Q2)</li>
+      </ul>
+
+      <p>The numbers told the story: AI adoption was working.</p>
+
+      <h2>What Didn't Work</h2>
+
+      <p>Not everything succeeded:</p>
+      <ul>
+        <li><strong>Auto-commit messages</strong>: LLM-generated commit messages were too generic. Engineers prefer writing their own.</li>
+        <li><strong>Test generation</strong>: Generated tests passed but didn't test meaningful behavior. False confidence.</li>
+        <li><strong>Code refactoring suggestions</strong>: Too opinionated. Engineers felt micromanaged.</li>
+      </ul>
+
+      <p>We killed these projects fast. Better to fail quickly than force adoption of something people don't want.</p>
+
+      <h2>Advice for Other Leaders</h2>
+
+      <p>If you're leading AI adoption:</p>
+
+      <ul>
+        <li><strong>Start with problems, not technology</strong>: Find pain points first, then apply AI</li>
+        <li><strong>Ship small wins fast</strong>: Don't spend 6 months building the perfect tool. Ship something useful in week 1.</li>
+        <li><strong>Make experimentation easy</strong>: Remove barriers. Provide tools, templates, and support.</li>
+        <li><strong>Address fears directly</strong>: Don't ignore "will AI replace us?" Talk about it openly.</li>
+        <li><strong>Celebrate successes</strong>: Public recognition drives more adoption</li>
+        <li><strong>Kill bad ideas fast</strong>: Not every AI experiment should become a product</li>
+      </ul>
+
+      <h2>The Mindset Shift</h2>
+
+      <p>The biggest change wasn't technical. It was cultural.</p>
+
+      <p>Six months ago, engineers saw AI as a threat or a toy. Now they see it as a tool—like Git, like their IDE, like any other productivity multiplier.</p>
+
+      <p>The question isn't "Should we use AI?" anymore. It's "What problem can AI help us solve next?"</p>
+
+      <blockquote>
+        "AI adoption isn't about the technology. It's about showing people how it makes their lives better."
+      </blockquote>
+
+      <p><strong>Resources to Get Started:</strong></p>
+      <ul>
+        <li>Anthropic Claude API: <a href="https://www.anthropic.com/api" target="_blank" style="color: var(--primary);">https://www.anthropic.com/api</a></li>
+        <li>LangChain Framework: <a href="https://www.langchain.com/" target="_blank" style="color: var(--primary);">https://www.langchain.com/</a></li>
+        <li>Vector DB (Pinecone): <a href="https://www.pinecone.io/" target="_blank" style="color: var(--primary);">https://www.pinecone.io/</a></li>
+        <li>Prompt Engineering Course: <a href="https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/" target="_blank" style="color: var(--primary);">DeepLearning.AI</a></li>
+      </ul>
+
+      <p>Leading AI adoption in your team? I'd love to hear what's working (and what's not). <a href="../index.html#contact" style="color: var(--primary);">Let's connect</a>.</p>
+
+      <div class="back-to-blog">
+        <a href="../blog.html">← Back to all articles</a>
+      </div>
+
+    </div>
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Dinesh Saini</p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

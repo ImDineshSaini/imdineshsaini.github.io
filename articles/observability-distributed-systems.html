@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observability in Distributed Systems: Finding Needles in Haystacks — Dinesh Saini</title>
+  <meta name="description" content="Building observability for microservices - distributed tracing, logging strategies, and debugging production issues across 20+ services.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../blog.css">
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="nav scrolled">
+    <div class="container nav-inner">
+      <a href="../index.html" class="nav-logo">dinesh<span>saini</span></a>
+      <ul class="nav-links"><li><a href="../blog.html">← Back to Writing</a></li></ul>
+    </div>
+  </nav>
+
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-date">November 18, 2024</span>
+      <span class="article-category">Architecture</span>
+    </div>
+    <h1>Observability in Distributed Systems: Finding Needles in Haystacks</h1>
+  </header>
+
+  <article class="article-content">
+    <div class="container">
+
+      <p>When a banking transaction fails across 7 microservices, good luck finding out why.</p>
+
+      <p>Logs are scattered across containers. Traces are incomplete. Metrics show something's wrong, but not what. And the user is angry because their $500 transfer disappeared.</p>
+
+      <p>In a monolith, debugging is straightforward: add a breakpoint, trace the call stack, read the logs. In distributed systems, it's like solving a mystery where clues are scattered across 20 different crime scenes.</p>
+
+      <p>After building observability for a banking platform handling millions of transactions, here's what actually helps debug production issues.</p>
+
+      <h2>Monitoring vs. Observability: What's the Difference?</h2>
+
+      <p>People confuse these terms. They're not the same.</p>
+
+      <p><strong>Monitoring</strong> tells you <em>something is wrong</em>. Dashboards, alerts, metrics.</p>
+      <p><strong>Observability</strong> tells you <em>why it's wrong</em>. You can ask arbitrary questions without predicting failure modes upfront.</p>
+
+      <div class="diagram">
+        <p class="diagram-title">Monitoring vs. Observability</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">Monitoring (Known Unknowns)</div>
+            <div class="arch-layer-desc">
+              ✓ CPU > 80% → Alert<br>
+              ✓ Error rate > 1% → Alert<br>
+              ✓ Response time > 500ms → Alert<br>
+              <strong>Problem:</strong> You must predict failure modes in advance
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">Observability (Unknown Unknowns)</div>
+            <div class="arch-layer-desc">
+              ✓ Why is user 12345's payment failing?<br>
+              ✓ Which service is causing the slowdown?<br>
+              ✓ What changed between 2pm and 3pm?<br>
+              <strong>Benefit:</strong> Ask questions you didn't anticipate
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p>You need both. Monitoring tells you to investigate. Observability helps you investigate.</p>
+
+      <h2>The Three Pillars of Observability</h2>
+
+      <p>The industry settled on three core signals:</p>
+
+      <h3>1. Metrics (What is happening?)</h3>
+      <p>Time-series data: counters, gauges, histograms.</p>
+      <ul>
+        <li>Request rate: 500 req/sec</li>
+        <li>Error rate: 2%</li>
+        <li>Latency: p95 = 300ms</li>
+        <li>CPU, memory, disk usage</li>
+      </ul>
+
+      <p><strong>Best for:</strong> Dashboards, alerts, high-level health</p>
+
+      <h3>2. Logs (What happened?)</h3>
+      <p>Structured events from application code.</p>
+      <pre><code>{
+  "timestamp": "2024-11-18T14:23:45Z",
+  "level": "error",
+  "service": "payment-service",
+  "traceId": "abc123",
+  "message": "Payment failed: insufficient funds",
+  "userId": "user_456",
+  "amount": 500
+}</code></pre>
+
+      <p><strong>Best for:</strong> Debugging specific errors, auditing</p>
+
+      <h3>3. Traces (How did it flow?)</h3>
+      <p>Request flow across multiple services.</p>
+      <pre><code>Gateway (50ms)
+  → Auth Service (20ms)
+  → Payment Service (200ms)
+    → Account Service (80ms) ← SLOW
+    → Fraud Service (30ms)
+  → Notification Service (10ms)</code></pre>
+
+      <p><strong>Best for:</strong> Understanding latency, service dependencies</p>
+
+      <h2>System Design: Building Distributed Tracing</h2>
+
+      <p>Tracing is the hardest pillar to get right. Here's our architecture:</p>
+
+      <div class="diagram">
+        <p class="diagram-title">Distributed Tracing Architecture</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">1. Generate Trace ID</div>
+            <div class="arch-layer-desc">
+              API Gateway creates unique trace ID for each request
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">2. Propagate Context</div>
+            <div class="arch-layer-desc">
+              Every service forwards trace ID + span ID in HTTP headers<br>
+              <code>traceparent: 00-abc123-def456-01</code>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">3. Record Spans</div>
+            <div class="arch-layer-desc">
+              Each service records its operation as a "span"<br>
+              Span = start time, end time, service name, operation
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">4. Send to Collector</div>
+            <div class="arch-layer-desc">
+              Services send spans to OpenTelemetry Collector (async)
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">5. Store & Visualize</div>
+            <div class="arch-layer-desc">
+              Jaeger/Tempo stores traces, Jaeger UI visualizes them
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p><strong>Our tracing stack:</strong></p>
+      <ul>
+        <li><strong>Instrumentation:</strong> OpenTelemetry SDKs (auto-instrumentation for Node.js, Java)</li>
+        <li><strong>Collection:</strong> OpenTelemetry Collector (aggregates spans, samples, batches)</li>
+        <li><strong>Storage:</strong> Jaeger (short-term) + Tempo (long-term, cheaper)</li>
+        <li><strong>Visualization:</strong> Jaeger UI, Grafana</li>
+      </ul>
+
+      <h2>Lesson 1: Context Propagation is Critical</h2>
+
+      <p>If a single service doesn't forward the trace ID, the entire trace breaks.</p>
+
+      <p>We learned this when traces randomly ended at the Payment Service. Turns out, we forgot to propagate headers in one HTTP client library.</p>
+
+      <p><strong>Automatic propagation with OpenTelemetry:</strong></p>
+      <pre><code>// Node.js example
+const { trace, context, propagation } = require('@opentelemetry/api');
+
+// Outgoing HTTP request
+const span = trace.getActiveSpan();
+const headers = {};
+
+// Inject trace context into headers
+propagation.inject(context.active(), headers);
+
+await fetch('http://account-service/balance', {
+  headers: {
+    ...headers,  // Contains traceparent header
+    'Authorization': token
+  }
+});
+
+// Incoming HTTP request
+app.use((req, res, next) => {
+  // Extract trace context from headers
+  const ctx = propagation.extract(context.active(), req.headers);
+  context.with(ctx, next);
+});</code></pre>
+
+      <p><strong>Key points:</strong></p>
+      <ul>
+        <li>Use standard W3C Trace Context format (<code>traceparent</code> header)</li>
+        <li>Auto-instrumentation handles this for common frameworks</li>
+        <li>For custom clients (gRPC, message queues), propagate manually</li>
+      </ul>
+
+      <h2>Lesson 2: Structured Logging > Text Logs</h2>
+
+      <p>Early on, we logged like this:</p>
+      <pre><code>console.log('Payment failed for user 123 amount 500');</code></pre>
+
+      <p>Problems:</p>
+      <ul>
+        <li>Hard to parse programmatically</li>
+        <li>Can't filter by userId or amount</li>
+        <li>No trace ID to correlate with traces</li>
+      </ul>
+
+      <p><strong>Better: Structured JSON logs</strong></p>
+      <pre><code>logger.error({
+  event: 'payment.failed',
+  traceId: trace.getActiveSpan()?.spanContext().traceId,
+  userId: '123',
+  amount: 500,
+  reason: 'insufficient_funds',
+  accountId: 'acc_789'
+});</code></pre>
+
+      <p><strong>Benefits:</strong></p>
+      <ul>
+        <li>Query logs like a database: <code>userId:"123" AND event:"payment.failed"</code></li>
+        <li>Correlate logs with traces using traceId</li>
+        <li>Aggregate metrics from logs (count payment failures by reason)</li>
+      </ul>
+
+      <p><strong>Our logging standard:</strong></p>
+      <ul>
+        <li>Always include: <code>timestamp, level, service, traceId, event</code></li>
+        <li>Use consistent field names across services (<code>userId</code> not <code>user_id</code> or <code>uid</code>)</li>
+        <li>Redact sensitive data (PII, tokens, passwords)</li>
+        <li>Log at appropriate levels (ERROR for failures, INFO for key events, DEBUG for troubleshooting)</li>
+      </ul>
+
+      <h2>Lesson 3: Sampling Saves Costs</h2>
+
+      <p>We can't trace every request. At 50K req/sec, storing all traces would cost $50K/month.</p>
+
+      <p><strong>Sampling strategies:</strong></p>
+
+      <div class="diagram">
+        <p class="diagram-title">Trace Sampling Strategies</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--primary);">
+              <th style="text-align: left; padding: 10px;">Strategy</th>
+              <th style="text-align: left; padding: 10px;">Description</th>
+              <th style="text-align: left; padding: 10px;">Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 10px;"><strong>Fixed Rate</strong></td>
+              <td style="padding: 10px;">Sample 1% of all requests</td>
+              <td style="padding: 10px;">Low-traffic services</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 10px;"><strong>Error-Based</strong></td>
+              <td style="padding: 10px;">Sample 100% of errors, 1% of success</td>
+              <td style="padding: 10px;">Focus on failures</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 10px;"><strong>Latency-Based</strong></td>
+              <td style="padding: 10px;">Sample slow requests (> 1s), 1% of fast ones</td>
+              <td style="padding: 10px;">Debug performance</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px;"><strong>Adaptive</strong></td>
+              <td style="padding: 10px;">Increase sampling during incidents</td>
+              <td style="padding: 10px;">Balance cost & visibility</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Our configuration:</strong></p>
+      <pre><code># OpenTelemetry Collector config
+processors:
+  probabilistic_sampler:
+    # Sample 1% of traces by default
+    sampling_percentage: 1
+
+  tail_sampling:
+    policies:
+      # Always sample errors
+      - name: error-policy
+        type: status_code
+        status_code: {status_codes: [ERROR]}
+
+      # Sample slow requests
+      - name: latency-policy
+        type: latency
+        latency: {threshold_ms: 1000}
+
+      # Sample 1% of everything else
+      - name: probabilistic-policy
+        type: probabilistic
+        probabilistic: {sampling_percentage: 1}</code></pre>
+
+      <p>This gives us:</p>
+      <ul>
+        <li>100% visibility into errors</li>
+        <li>100% visibility into slow requests</li>
+        <li>1% sample of happy path (for volume analysis)</li>
+        <li>90% cost reduction vs. tracing everything</li>
+      </ul>
+
+      <h2>System Design: Centralized Logging Architecture</h2>
+
+      <p>With 20+ services, you can't SSH into containers and <code>tail -f</code> logs. You need centralized logging.</p>
+
+      <div class="diagram">
+        <p class="diagram-title">Centralized Logging Architecture</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">1. Services Emit Logs</div>
+            <div class="arch-layer-desc">
+              Applications log to stdout (JSON format)
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">2. Log Shipper (Fluent Bit)</div>
+            <div class="arch-layer-desc">
+              DaemonSet on each Kubernetes node collects logs
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">3. Log Aggregator (Kafka)</div>
+            <div class="arch-layer-desc">
+              Buffer logs (handles traffic spikes)
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">4. Storage (Elasticsearch)</div>
+            <div class="arch-layer-desc">
+              Index logs for fast search (30-day retention)
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">5. Visualization (Kibana)</div>
+            <div class="arch-layer-desc">
+              Query, filter, visualize logs
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p><strong>Key decisions:</strong></p>
+      <ul>
+        <li><strong>Log to stdout</strong>: Don't write to files (containers are ephemeral)</li>
+        <li><strong>Structured JSON</strong>: Parse once at shipper, not every query</li>
+        <li><strong>Kafka buffer</strong>: Prevents log loss during Elasticsearch outages</li>
+        <li><strong>Retention policy</strong>: 30 days in hot storage, 1 year in S3 (compliance)</li>
+      </ul>
+
+      <h2>Lesson 4: Metrics for Alerts, Traces for Root Cause</h2>
+
+      <p>Don't alert on traces. Alert on metrics.</p>
+
+      <p><strong>Why?</strong></p>
+      <ul>
+        <li>Metrics are cheap (aggregate data)</li>
+        <li>Traces are expensive (detailed per-request data)</li>
+        <li>Alerts need to fire instantly (metrics are pre-aggregated)</li>
+      </ul>
+
+      <p><strong>Our workflow:</strong></p>
+
+      <div class="diagram">
+        <p class="diagram-title">Incident Response Workflow</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">1. Alert (Metrics)</div>
+            <div class="arch-layer-desc">
+              Prometheus alert: "payment-service error rate > 1%"
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">2. Investigate (Logs)</div>
+            <div class="arch-layer-desc">
+              Kibana: Filter logs by service, time range, error level
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">3. Deep Dive (Traces)</div>
+            <div class="arch-layer-desc">
+              Copy traceId from logs → Jaeger → See full request flow
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">4. Root Cause</div>
+            <div class="arch-layer-desc">
+              Trace shows Account Service timing out → Check its metrics/logs
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p><strong>Example alert:</strong></p>
+      <pre><code># Prometheus alerting rule
+- alert: HighErrorRate
+  expr: |
+    sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+    /
+    sum(rate(http_requests_total[5m])) by (service)
+    > 0.01
+  for: 5m
+  annotations:
+    summary: "{{ $labels.service }} error rate > 1%"
+    runbook: "Check Kibana for errors, then Jaeger for traces"</code></pre>
+
+      <h2>Lesson 5: Correlation IDs Tie Everything Together</h2>
+
+      <p>The magic that connects metrics, logs, and traces: <strong>correlation IDs</strong>.</p>
+
+      <p><strong>IDs we track:</strong></p>
+      <ul>
+        <li><strong>Trace ID</strong>: Links all operations in a single request</li>
+        <li><strong>Span ID</strong>: Identifies a specific operation within a trace</li>
+        <li><strong>User ID</strong>: Links all requests from a user</li>
+        <li><strong>Session ID</strong>: Links requests in a user session</li>
+        <li><strong>Request ID</strong>: API gateway's unique ID (for support tickets)</li>
+      </ul>
+
+      <p><strong>Example correlation:</strong></p>
+      <pre><code>// User reports: "My payment failed, request ID req_xyz"
+
+1. Kibana: Search requestId:"req_xyz"
+   → Found log: traceId = "abc123", error = "timeout"
+
+2. Jaeger: Search traceId:"abc123"
+   → Trace shows: Account Service took 30s (should be <1s)
+
+3. Prometheus: Check account-service latency at that timestamp
+   → Latency spiked due to database connection pool exhaustion
+
+4. Root cause: Database connection leak in recent deploy</code></pre>
+
+      <p>Without correlation IDs, this investigation would take hours (or be impossible).</p>
+
+      <h2>Lesson 6: Don't Over-Instrument</h2>
+
+      <p>Early on, we instrumented everything. Every function call, every database query, every Redis get.</p>
+
+      <p>Result: 100K spans per trace. Jaeger UI was unusable. Storage costs exploded.</p>
+
+      <p><strong>What to instrument:</strong></p>
+      <ul>
+        <li>✅ HTTP requests (inbound and outbound)</li>
+        <li>✅ Database queries</li>
+        <li>✅ External API calls</li>
+        <li>✅ Message queue operations</li>
+        <li>✅ Critical business operations (payment processing, fraud checks)</li>
+        <li>❌ Internal function calls</li>
+        <li>❌ Logging operations</li>
+        <li>❌ Metrics collection</li>
+      </ul>
+
+      <p><strong>Our rule:</strong> Instrument at service boundaries, not internal logic.</p>
+
+      <h2>Real-World Debugging Story</h2>
+
+      <p>A user reported: "I transferred $500, but it's not showing in my account."</p>
+
+      <p><strong>Investigation:</strong></p>
+
+      <ol>
+        <li><strong>Kibana</strong>: Search userId + timestamp → Found: "Payment completed" log with traceId</li>
+        <li><strong>Jaeger</strong>: Trace shows Payment Service returned 200 OK</li>
+        <li><strong>Deeper search</strong>: Logs show Account Service never received the event</li>
+        <li><strong>Kafka lag</strong>: Check Kafka consumer lag → Payment events backed up 2 hours</li>
+        <li><strong>Root cause</strong>: Account Service consumer pod crashed (OOM), events queued in Kafka</li>
+      </ol>
+
+      <p><strong>Resolution:</strong></p>
+      <ul>
+        <li>Restarted Account Service consumer</li>
+        <li>Events processed from Kafka backlog</li>
+        <li>User's balance updated (2 hours late, but correct)</li>
+        <li>Added alert: "Kafka consumer lag > 5 minutes"</li>
+      </ul>
+
+      <p>Without observability, we would have told the user "the payment failed" and asked them to retry (creating a duplicate payment).</p>
+
+      <h2>Tools We Use</h2>
+
+      <p><strong>Metrics:</strong></p>
+      <ul>
+        <li><a href="https://prometheus.io/" target="_blank">Prometheus</a> - Time-series database</li>
+        <li><a href="https://grafana.com/" target="_blank">Grafana</a> - Visualization dashboards</li>
+        <li>Instrumentation: OpenTelemetry Metrics SDK</li>
+      </ul>
+
+      <p><strong>Logs:</strong></p>
+      <ul>
+        <li><a href="https://www.elastic.co/elasticsearch/" target="_blank">Elasticsearch</a> - Log storage & search</li>
+        <li><a href="https://www.elastic.co/kibana/" target="_blank">Kibana</a> - Log exploration UI</li>
+        <li><a href="https://fluentbit.io/" target="_blank">Fluent Bit</a> - Log shipping (lightweight)</li>
+      </ul>
+
+      <p><strong>Traces:</strong></p>
+      <ul>
+        <li><a href="https://www.jaegertracing.io/" target="_blank">Jaeger</a> - Distributed tracing backend</li>
+        <li><a href="https://grafana.com/oss/tempo/" target="_blank">Grafana Tempo</a> - Cost-effective long-term storage</li>
+        <li><a href="https://opentelemetry.io/" target="_blank">OpenTelemetry</a> - Instrumentation & collection</li>
+      </ul>
+
+      <p><strong>All-in-one alternatives:</strong></p>
+      <ul>
+        <li><a href="https://www.datadoghq.com/" target="_blank">Datadog</a> - Managed (expensive but great UX)</li>
+        <li><a href="https://newrelic.com/" target="_blank">New Relic</a> - Managed</li>
+        <li><a href="https://www.honeycomb.io/" target="_blank">Honeycomb</a> - Observability-first (high-cardinality queries)</li>
+      </ul>
+
+      <h2>Key Takeaways</h2>
+
+      <ol>
+        <li><strong>Observability ≠ Monitoring</strong>: Monitoring alerts, observability debugs.</li>
+        <li><strong>Correlation IDs are mandatory</strong>: Tie logs, metrics, and traces together.</li>
+        <li><strong>Structured logging</strong>: JSON logs with consistent field names.</li>
+        <li><strong>Distributed tracing</strong>: Propagate trace context across all services.</li>
+        <li><strong>Sampling</strong>: Trace errors and slow requests, sample happy path.</li>
+        <li><strong>Instrument at boundaries</strong>: HTTP, database, queues (not internal functions).</li>
+        <li><strong>Metrics → Logs → Traces</strong>: Use each tool for its strength.</li>
+      </ol>
+
+      <h2>Further Reading & References</h2>
+
+      <p><strong>Official Documentation:</strong></p>
+      <ul>
+        <li><a href="https://opentelemetry.io/docs/" target="_blank">OpenTelemetry Documentation</a> - Industry standard for observability</li>
+        <li><a href="https://www.jaegertracing.io/docs/" target="_blank">Jaeger Documentation</a> - Distributed tracing</li>
+        <li><a href="https://prometheus.io/docs/" target="_blank">Prometheus Documentation</a> - Metrics & alerting</li>
+        <li><a href="https://www.elastic.co/guide/index.html" target="_blank">Elastic Stack (ELK)</a> - Logging platform</li>
+      </ul>
+
+      <p><strong>Concepts & Patterns:</strong></p>
+      <ul>
+        <li><a href="https://www.w3.org/TR/trace-context/" target="_blank">W3C Trace Context</a> - Standard for trace propagation</li>
+        <li><a href="https://sre.google/sre-book/monitoring-distributed-systems/" target="_blank">Google SRE Book: Monitoring Distributed Systems</a></li>
+        <li><a href="https://www.honeycomb.io/blog/observability-engineering" target="_blank">Honeycomb: Observability Engineering</a></li>
+      </ul>
+
+      <p><strong>Books:</strong></p>
+      <ul>
+        <li><a href="https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/" target="_blank">Distributed Systems Observability</a> by Cindy Sridharan</li>
+        <li>"Observability Engineering" by Charity Majors, Liz Fong-Jones, George Miranda</li>
+      </ul>
+
+      <p><strong>Tools & Frameworks:</strong></p>
+      <ul>
+        <li><a href="https://opentelemetry.io/docs/instrumentation/" target="_blank">OpenTelemetry Auto-Instrumentation</a> - Zero-code tracing</li>
+        <li><a href="https://grafana.com/grafana/" target="_blank">Grafana</a> - Unified observability dashboards</li>
+        <li><a href="https://vector.dev/" target="_blank">Vector</a> - High-performance log/metric pipeline</li>
+      </ul>
+
+      <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
+
+      <p><em>Observability is the difference between "something's broken" and "I know exactly what's broken and how to fix it." In distributed systems, it's not optional—it's survival.</em></p>
+
+      <p><em>Need help building observability for your distributed system? <a href="../index.html#contact">Let's talk</a>.</em></p>
+
+    </div>
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Dinesh Saini &middot; <a href="../blog.html" style="color: var(--primary);">Back to Writing</a> &middot; <a href="../index.html" style="color: var(--primary);">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

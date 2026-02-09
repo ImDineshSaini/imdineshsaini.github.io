@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spec-Driven AI Development: Building AI Features That Work — Dinesh Saini</title>
+  <meta name="description" content="How specification-driven development helps build reliable AI features in production.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../blog.css">
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="nav scrolled">
+    <div class="container nav-inner">
+      <a href="../index.html" class="nav-logo">dinesh<span>saini</span></a>
+      <ul class="nav-links"><li><a href="../blog.html">← Back to Writing</a></li></ul>
+    </div>
+  </nav>
+
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-date">October 5, 2025</span>
+      <span class="article-category">AI Development</span>
+    </div>
+    <h1>Spec-Driven AI Development: Building AI Features That Actually Work</h1>
+  </header>
+
+  <article class="article-content">
+    <div class="container">
+
+      <p>Building AI features is different from building traditional software. With regular code, you write tests, the tests pass, and you ship. With AI, the code "works," but the output might still be wrong, inconsistent, or just weird.</p>
+
+      <p>After shipping dozens of AI features — from code review agents to document classification systems — I've learned that the traditional dev-test-ship cycle doesn't cut it. You need something more structured.</p>
+
+      <p>Enter <strong>spec-driven AI development</strong>: a methodology that brings rigor to the inherently fuzzy world of LLMs and machine learning.</p>
+
+      <h2>The Problem: AI Features Are Unpredictable</h2>
+
+      <p>Here's a scenario that'll sound familiar if you've built AI features:</p>
+
+      <p>You build an LLM-powered feature to classify customer support tickets. You test it manually with 20 examples. It works great! You ship it to production.</p>
+
+      <p>Three days later, support escalates a ticket: "The AI is routing urgent billing issues to the general inquiry queue."</p>
+
+      <p>You investigate. The LLM misunderstood "billing urgency" and classified it as a question about billing, not an urgent problem. Your manual tests didn't catch this edge case.</p>
+
+      <p>This happens because <strong>AI systems have an infinite input space</strong>. You can't test every possible input. Traditional unit tests aren't enough.</p>
+
+      <h2>The Solution: Specification-Driven Development</h2>
+
+      <p>Spec-driven development means defining <em>what success looks like</em> before writing code. For AI features, this means:</p>
+
+      <div class="diagram">
+        <p class="diagram-title">Spec-Driven AI Development Workflow</p>
+        <div class="flow-diagram">
+          <div class="flow-node">1. Write Spec</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">2. Build Test Cases</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">3. Implement Feature</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">4. Validate Against Spec</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">5. Monitor in Production</div>
+        </div>
+      </div>
+
+      <p>Let me walk you through how we apply this.</p>
+
+      <h2>Step 1: Write the Specification</h2>
+
+      <p>A good AI spec defines:</p>
+
+      <ul>
+        <li><strong>Input</strong>: What data does the system receive?</li>
+        <li><strong>Output</strong>: What should it produce?</li>
+        <li><strong>Success criteria</strong>: How do you measure if it worked?</li>
+        <li><strong>Edge cases</strong>: What unusual inputs might break it?</li>
+        <li><strong>Failure modes</strong>: What happens when it can't answer?</li>
+      </ul>
+
+      <p>Example spec for our ticket classifier:</p>
+
+      <blockquote>
+        <strong>Feature</strong>: Support Ticket Classification<br><br>
+        <strong>Input</strong>: Customer support ticket (text, 10-5000 characters)<br><br>
+        <strong>Output</strong>: Category (Billing, Technical, General) + Urgency (Low, Medium, High, Critical)<br><br>
+        <strong>Success Criteria</strong>: ≥95% accuracy on validation set, <2s latency<br><br>
+        <strong>Edge Cases</strong>:<br>
+        - Multilingual input<br>
+        - Vague language ("something's wrong")<br>
+        - Multiple issues in one ticket<br>
+        - Spam/abusive language<br><br>
+        <strong>Failure Mode</strong>: Return confidence score < 0.7 → escalate to human
+      </blockquote>
+
+      <p>Notice how specific this is. No room for "it mostly works."</p>
+
+      <h2>Step 2: Build Test Cases First</h2>
+
+      <p>Before writing any code, we build a test dataset covering:</p>
+
+      <ul>
+        <li><strong>Happy path examples</strong>: Clear, straightforward inputs (20 examples)</li>
+        <li><strong>Edge cases</strong>: Ambiguous, unusual, or tricky inputs (30 examples)</li>
+        <li><strong>Failure cases</strong>: Inputs where the system should say "I don't know" (10 examples)</li>
+      </ul>
+
+      <p>For our ticket classifier, that means manually labeling 60 real tickets with expected category and urgency.</p>
+
+      <p>This is tedious but essential. These test cases become your ground truth.</p>
+
+      <h2>Step 3: Implement Feature (With Validation Loop)</h2>
+
+      <p>Now we build the feature. But unlike traditional development, we validate continuously:</p>
+
+      <ul>
+        <li>After prompt engineering → run test suite</li>
+        <li>After adding few-shot examples → run test suite</li>
+        <li>After changing LLM model → run test suite</li>
+        <li>After adding retrieval logic → run test suite</li>
+      </ul>
+
+      <p>Each change is validated against the spec. If accuracy drops below 95%, we don't ship.</p>
+
+      <h2>Step 4: Automated Evaluation</h2>
+
+      <p>We automate spec validation with test scripts:</p>
+
+      <pre><code>def test_ticket_classification():
+    test_cases = load_test_dataset('tickets_validation.json')
+
+    correct = 0
+    for ticket in test_cases:
+        result = classify_ticket(ticket.text)
+        if result.category == ticket.expected_category:
+            correct += 1
+
+    accuracy = correct / len(test_cases)
+    assert accuracy >= 0.95, f"Accuracy {accuracy} below threshold"
+</code></pre>
+
+      <p>This runs on every commit. If the spec isn't met, the build fails.</p>
+
+      <h2>Step 5: Production Monitoring</h2>
+
+      <p>Specs don't end at deployment. We monitor production against spec criteria:</p>
+
+      <ul>
+        <li><strong>Accuracy drift</strong>: Sample 100 random predictions weekly, manually validate</li>
+        <li><strong>Latency</strong>: P95 latency must stay < 2s</li>
+        <li><strong>Confidence distribution</strong>: Track how often confidence scores are low</li>
+        <li><strong>User feedback</strong>: "Was this helpful?" button on every classification</li>
+      </ul>
+
+      <p>When metrics drift outside spec bounds, we trigger a review and revalidation cycle.</p>
+
+      <h2>Real-World Example: MR Review Agent Spec</h2>
+
+      <p>Here's how we applied spec-driven development to our merge request review agent:</p>
+
+      <p><strong>Spec</strong>:</p>
+      <ul>
+        <li>Input: Git diff (up to 2000 lines)</li>
+        <li>Output: List of review comments with line numbers and severity (info/warning/error)</li>
+        <li>Success Criteria: ≥80% of comments rated "helpful" by engineers</li>
+        <li>Edge Cases: Binary files, generated code, large refactors</li>
+        <li>Failure Mode: If diff > 2000 lines, comment "PR too large for automated review"</li>
+      </ul>
+
+      <p><strong>Test Dataset</strong>: 50 historical MRs with manually written "gold standard" reviews</p>
+
+      <p><strong>Validation</strong>: Agent must catch ≥70% of issues that human reviewers caught</p>
+
+      <p>With this spec, we could objectively measure progress. After 3 iterations, we hit 82% "helpful" rating and shipped to production.</p>
+
+      <h2>Why This Works</h2>
+
+      <p>Spec-driven development brings three critical benefits:</p>
+
+      <ul>
+        <li><strong>Objectivity</strong>: No more "it feels good enough" — you have concrete metrics</li>
+        <li><strong>Regression prevention</strong>: Changes that break the spec are caught immediately</li>
+        <li><strong>Shared understanding</strong>: Product, engineering, and QA align on what "done" means</li>
+      </ul>
+
+      <p>Most importantly, it shifts the conversation from "does it work?" to "does it meet our quality bar?"</p>
+
+      <h2>When Spec-Driven Development Isn't Enough</h2>
+
+      <p>This methodology has limits. It doesn't catch:</p>
+
+      <ul>
+        <li><strong>Unknown unknowns</strong>: Edge cases you didn't think to specify</li>
+        <li><strong>Emergent behavior</strong>: Complex interactions between AI components</li>
+        <li><strong>Adversarial inputs</strong>: Users trying to break the system</li>
+      </ul>
+
+      <p>That's why Step 5 (production monitoring) is critical. The spec evolves as you learn from real usage.</p>
+
+      <h2>Getting Started</h2>
+
+      <p>If you're building AI features, try this:</p>
+
+      <ol>
+        <li>Pick one AI feature you're working on</li>
+        <li>Write a one-page spec (input, output, success criteria, edge cases, failure modes)</li>
+        <li>Build a test dataset (20-50 examples) before writing code</li>
+        <li>Run evaluations on every change</li>
+        <li>Track production metrics against your spec</li>
+      </ol>
+
+      <p>Start small. One feature, one spec. Build the habit.</p>
+
+      <blockquote>
+        "Specifications turn AI development from art into engineering."
+      </blockquote>
+
+      <p><strong>Key Takeaways:</strong></p>
+      <ul>
+        <li>Define success criteria before building — make them measurable</li>
+        <li>Build test datasets that cover happy path, edge cases, and failures</li>
+        <li>Validate continuously as you build — don't wait until the end</li>
+        <li>Automate spec validation in CI/CD pipelines</li>
+        <li>Monitor production metrics against your spec — update as you learn</li>
+      </ul>
+
+      <p>Building AI features with specifications? I'd love to hear how it's working for you. <a href="../index.html#contact" style="color: var(--primary);">Let's connect</a>.</p>
+
+      <div class="back-to-blog">
+        <a href="../blog.html">← Back to all articles</a>
+      </div>
+
+    </div>
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Dinesh Saini &middot; <a href="../index.html" style="color: var(--primary);">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

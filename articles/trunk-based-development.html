@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trunk-Based Development — Dinesh Saini</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../blog.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <nav class="nav scrolled">
+    <div class="container nav-inner">
+      <a href="../index.html" class="nav-logo">dinesh<span>saini</span></a>
+      <ul class="nav-links"><li><a href="../blog.html">← Back to Writing</a></li></ul>
+    </div>
+  </nav>
+
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-date">August 10, 2025</span>
+      <span class="article-category">Development Practice</span>
+    </div>
+    <h1>Trunk-Based Development: Why We Ditched Long-Lived Feature Branches</h1>
+  </header>
+
+  <article class="article-content">
+    <div class="container">
+
+      <p>For years, our team followed Git Flow religiously. Feature branches lived for weeks. Merge conflicts were daily battles. Releases were stressful coordination exercises.</p>
+
+      <p>Then we switched to trunk-based development. Everyone commits to main. Branches live hours, not weeks. Releases happen 20+ times per day.</p>
+
+      <p>It felt scary at first. Now we can't imagine going back.</p>
+
+      <h2>The Problem With Long-Lived Branches</h2>
+
+      <p>Git Flow made sense in 2010. It doesn't in 2025.</p>
+
+      <p>Here's what we experienced with long-lived feature branches:</p>
+
+      <ul>
+        <li><strong>Merge hell</strong>: Feature branches diverged from main for 2-3 weeks. Merging back was painful.</li>
+        <li><strong>Integration surprises</strong>: Features worked in isolation but broke when combined.</li>
+        <li><strong>Deployment delays</strong>: Finished features waited for the next release window.</li>
+        <li><strong>Code review bottlenecks</strong>: Reviewing 2 weeks of changes took hours.</li>
+      </ul>
+
+      <p>The final straw: A critical security patch took 4 days to deploy because we had to wait for unrelated features to finish testing on the release branch.</p>
+
+      <p>That's when we explored trunk-based development.</p>
+
+      <h2>What Is Trunk-Based Development?</h2>
+
+      <p>The concept is simple: <strong>everyone commits directly to the main branch (trunk)</strong>. No long-lived feature branches.</p>
+
+      <div class="diagram">
+        <p class="diagram-title">Git Flow vs Trunk-Based Development</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">Git Flow</div>
+            <div class="arch-layer-desc">main → develop → feature branches (weeks) → release branch → main</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">Trunk-Based</div>
+            <div class="arch-layer-desc">main ← short-lived branches (hours) → main continuously</div>
+          </div>
+        </div>
+      </div>
+
+      <p>Rules we follow:</p>
+      <ul>
+        <li>Branches must merge within 24 hours (ideally < 4 hours)</li>
+        <li>Main branch is always deployable</li>
+        <li>Feature flags control incomplete features</li>
+        <li>CI/CD runs on every commit to main</li>
+        <li>Automated tests catch regressions immediately</li>
+      </ul>
+
+      <h2>Lesson 1: Small, Frequent Commits</h2>
+
+      <p>The key to trunk-based development: <strong>commit small changes often</strong>.</p>
+
+      <p>Instead of completing an entire feature before merging, we break work into tiny increments:</p>
+
+      <ul>
+        <li>Add database migration → commit</li>
+        <li>Create model class → commit</li>
+        <li>Add API endpoint (behind feature flag) → commit</li>
+        <li>Write tests → commit</li>
+        <li>Add UI (hidden by flag) → commit</li>
+        <li>Enable feature flag → commit</li>
+      </ul>
+
+      <p>Each commit is small, reviewable, and independently deployable.</p>
+
+      <h2>Lesson 2: Feature Flags Are Essential</h2>
+
+      <p>You can't deploy incomplete features to production without feature flags.</p>
+
+      <p>We use feature flags to hide work-in-progress:</p>
+
+      <pre><code>if FeatureFlag.enabled?(:new_kyc_flow, user: current_user)
+  render 'kyc/new_flow'
+else
+  render 'kyc/legacy_flow'
+end</code></pre>
+
+      <p>This lets us:</p>
+      <ul>
+        <li>Deploy incomplete features to production (disabled by default)</li>
+        <li>Test in production with a small % of users</li>
+        <li>Rollback instantly by toggling a flag (no redeployment needed)</li>
+        <li>Gradual rollouts (5% → 25% → 50% → 100%)</li>
+      </ul>
+
+      <p><strong>Tools We Use:</strong></p>
+      <ul>
+        <li><strong>LaunchDarkly</strong>: Enterprise feature flag platform - <a href="https://launchdarkly.com/" target="_blank" style="color: var(--primary);">https://launchdarkly.com/</a></li>
+        <li><strong>GrowthBook</strong>: Open-source A/B testing + feature flags - <a href="https://www.growthbook.io/" target="_blank" style="color: var(--primary);">https://www.growthbook.io/</a></li>
+        <li><strong>Unleash</strong>: Self-hosted feature toggles - <a href="https://www.getunleash.io/" target="_blank" style="color: var(--primary);">https://www.getunleash.io/</a></li>
+      </ul>
+
+      <h2>Lesson 3: CI/CD Must Be Fast</h2>
+
+      <p>Trunk-based development requires fast CI/CD. If tests take 30 minutes, nobody will commit frequently.</p>
+
+      <p>We optimized our pipeline:</p>
+      <ul>
+        <li><strong>Parallel test execution</strong>: Split test suite across 10 workers</li>
+        <li><strong>Selective testing</strong>: Only run tests affected by code changes</li>
+        <li><strong>Docker layer caching</strong>: Skip rebuilding unchanged dependencies</li>
+        <li><strong>Fast feedback loop</strong>: Unit tests run in < 2 min, full suite in < 8 min</li>
+      </ul>
+
+      <p>Pipeline went from 28 minutes to 8 minutes. Commit frequency doubled.</p>
+
+      <p><strong>CI/CD Tools:</strong></p>
+      <ul>
+        <li>GitHub Actions: <a href="https://github.com/features/actions" target="_blank" style="color: var(--primary);">https://github.com/features/actions</a></li>
+        <li>GitLab CI/CD: <a href="https://docs.gitlab.com/ee/ci/" target="_blank" style="color: var(--primary);">https://docs.gitlab.com/ee/ci/</a></li>
+        <li>CircleCI: <a href="https://circleci.com/" target="_blank" style="color: var(--primary);">https://circleci.com/</a></li>
+      </ul>
+
+      <h2>Lesson 4: Code Review Shifts Left</h2>
+
+      <p>Small commits = faster code reviews.</p>
+
+      <p>Before trunk-based: "Review my 47-file, 2000-line feature branch."</p>
+
+      <p>After trunk-based: "Review my 3-file, 80-line commit."</p>
+
+      <p>Reviews that took hours now take 10 minutes. Feedback is immediate, not days later.</p>
+
+      <p>We also pair program more often. When two people write code together, formal review becomes less critical.</p>
+
+      <h2>Lesson 5: Main Branch Protection</h2>
+
+      <p>Since main is always deployable, we enforce quality gates:</p>
+
+      <ul>
+        <li>✅ All tests must pass</li>
+        <li>✅ Code coverage must not decrease</li>
+        <li>✅ At least 1 approval required for merge</li>
+        <li>✅ No merge conflicts</li>
+        <li>✅ Security scans must pass (no high/critical vulnerabilities)</li>
+      </ul>
+
+      <p>GitHub/GitLab branch protection rules enforce these automatically.</p>
+
+      <p><strong>Branch Protection Setup:</strong></p>
+      <pre><code># .github/workflows/branch-protection.yml
+name: Branch Protection
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Tests
+        run: bundle exec rspec
+      - name: Check Coverage
+        run: bundle exec rake coverage:check
+      - name: Security Scan
+        run: bundle exec brakeman --no-pager
+</code></pre>
+
+      <h2>The Migration Process</h2>
+
+      <p>We didn't flip a switch. We migrated gradually:</p>
+
+      <div class="diagram">
+        <p class="diagram-title">Migration to Trunk-Based Development</p>
+        <div class="flow-diagram">
+          <div class="flow-node">Month 1: Training</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Month 2: Pilot Team</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Month 3: Add Feature Flags</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Month 4: Full Adoption</div>
+        </div>
+      </div>
+
+      <p><strong>Month 1</strong>: Team training on trunk-based principles and feature flags</p>
+      <p><strong>Month 2</strong>: One team pilots trunk-based dev, reports learnings</p>
+      <p><strong>Month 3</strong>: Deploy feature flag system, integrate into codebase</p>
+      <p><strong>Month 4</strong>: All teams switch to trunk-based, retire Git Flow branches</p>
+
+      <h2>What We Gained</h2>
+
+      <p>After 6 months of trunk-based development:</p>
+
+      <ul>
+        <li><strong>Deployment frequency</strong>: 4/week → 20+/day</li>
+        <li><strong>Lead time</strong>: Code to production in < 4 hours (was 2-3 weeks)</li>
+        <li><strong>Merge conflicts</strong>: Down 90% (small, frequent merges reduce conflicts)</li>
+        <li><strong>Failed deployments</strong>: Down 60% (smaller changes = less risk)</li>
+        <li><strong>Hotfix time</strong>: Critical fixes deploy in < 30 min (no waiting for releases)</li>
+      </ul>
+
+      <p>The biggest win: <strong>psychological safety</strong>. Engineers ship changes confidently knowing they can rollback with a feature flag toggle.</p>
+
+      <h2>What About Releases?</h2>
+
+      <p>We don't do "releases" anymore in the traditional sense. Main is always production-ready.</p>
+
+      <p>We use feature flags for rollouts:</p>
+      <ul>
+        <li>Enable for internal users first (dogfooding)</li>
+        <li>Gradual rollout: 5% → 25% → 50% → 100%</li>
+        <li>Monitor metrics at each stage</li>
+        <li>Rollback if issues detected (toggle flag off)</li>
+      </ul>
+
+      <p>This is safer than big-bang releases.</p>
+
+      <h2>Common Objections</h2>
+
+      <p><strong>"What if someone breaks main?"</strong></p>
+      <p>It happens. When it does, we revert the commit immediately. Because commits are small, reverts are safe. In 6 months, we've reverted 8 commits. Total downtime: < 15 minutes combined.</p>
+
+      <p><strong>"What about unfinished features?"</strong></p>
+      <p>Feature flags. Deploy code disabled, enable when ready.</p>
+
+      <p><strong>"Our tests are slow."</strong></p>
+      <p>Fix them. Slow tests are a blocker regardless of branching strategy. Invest in parallelization and selective testing.</p>
+
+      <h2>When Trunk-Based Development Doesn't Fit</h2>
+
+      <p>Trunk-based isn't for everyone:</p>
+
+      <ul>
+        <li>Open-source projects with external contributors (Git Flow works better)</li>
+        <li>Teams without strong CI/CD (fix that first)</li>
+        <li>Regulated industries where every deploy needs approval (use release trains instead)</li>
+      </ul>
+
+      <p>For product teams building web services, trunk-based is transformative.</p>
+
+      <blockquote>
+        "Trunk-based development isn't about abandoning branches. It's about keeping them short-lived."
+      </blockquote>
+
+      <p><strong>Learn More:</strong></p>
+      <ul>
+        <li>Trunk-Based Development Guide: <a href="https://trunkbaseddevelopment.com/" target="_blank" style="color: var(--primary);">https://trunkbaseddevelopment.com/</a></li>
+        <li>Google's Approach (Monorepo): <a href="https://research.google/pubs/pub45424/" target="_blank" style="color: var(--primary);">Why Google Stores Billions of Lines of Code in a Single Repository</a></li>
+        <li>Feature Flag Best Practices: <a href="https://martinfowler.com/articles/feature-toggles.html" target="_blank" style="color: var(--primary);">Martin Fowler on Feature Toggles</a></li>
+      </ul>
+
+      <p>Considering trunk-based development? <a href="../index.html#contact" style="color: var(--primary);">Let's discuss your setup</a>.</p>
+
+      <div class="back-to-blog">
+        <a href="../blog.html">← Back to all articles</a>
+      </div>
+
+    </div>
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Dinesh Saini</p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

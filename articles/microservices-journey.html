@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Microservices Journey — Dinesh Saini</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../blog.css">
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="nav scrolled">
+    <div class="container nav-inner">
+      <a href="../index.html" class="nav-logo">dinesh<span>saini</span></a>
+      <ul class="nav-links"><li><a href="../blog.html">← Back to Writing</a></li></ul>
+    </div>
+  </nav>
+
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-date">November 22, 2025</span>
+      <span class="article-category">Microservices</span>
+    </div>
+    <h1>The Microservices Journey: When Breaking Things Apart Makes Sense</h1>
+  </header>
+
+  <article class="article-content">
+    <div class="container">
+
+      <p>Three years ago, our banking platform was a Rails monolith handling everything from customer onboarding to compliance checks to payment processing. One codebase, one database, one deployment.</p>
+
+      <p>Today, it's 23 microservices orchestrated across AWS and Azure, each owned by a different team, each deployable independently.</p>
+
+      <p>This is the story of why we did it, what went spectacularly wrong, and what we'd do differently if we could start over.</p>
+
+      <h2>The Monolith Wasn't The Problem (At First)</h2>
+
+      <p>Let me be clear: <strong>our monolith wasn't bad</strong>. It was well-architected, had decent test coverage, and served us fine for years. We processed millions of transactions monthly without major incidents.</p>
+
+      <p>But three things changed:</p>
+
+      <ul>
+        <li><strong>Team size</strong>: We grew from 12 to 50+ engineers. Merge conflicts became daily battles.</li>
+        <li><strong>Deployment frequency</strong>: Releasing meant coordinating 6 teams. Small features waited weeks for the next release window.</li>
+        <li><strong>Technology constraints</strong>: Some features (like real-time fraud detection) needed different tech stacks. Forcing everything into Rails was becoming painful.</li>
+      </ul>
+
+      <p>The breaking point came when a one-line config change in the KYC module took three weeks to deploy because it had to wait for unrelated payment features to finish testing.</p>
+
+      <p>"What if each team could deploy independently?" someone asked.</p>
+
+      <p>That's when we started exploring microservices.</p>
+
+      <h2>The Architecture: Before and After</h2>
+
+      <div class="diagram">
+        <p class="diagram-title">From Monolith to Microservices</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">Before: Monolith</div>
+            <div class="arch-layer-desc">Single app, single database, shared code</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">After: 23 Services</div>
+            <div class="arch-layer-desc">Independent services, separate databases, API contracts</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">API Gateway</div>
+            <div class="arch-layer-desc">Routing, auth, rate limiting</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">Shared Infrastructure</div>
+            <div class="arch-layer-desc">Logging, monitoring, deployment pipelines</div>
+          </div>
+        </div>
+      </div>
+
+      <h2>Lesson 1: Start With Bounded Contexts</h2>
+
+      <p>Our first mistake was trying to carve up the monolith by <em>technology</em> instead of <em>business domains</em>.</p>
+
+      <p>We created a "Database Service" that all other services called for data access. A "Notification Service" that handled all emails and SMS. An "Authentication Service" for all logins.</p>
+
+      <p>This was a disaster. Every feature change required coordinating multiple services. We'd just rebuilt the monolith, but with network latency.</p>
+
+      <p>We fixed this by following Domain-Driven Design principles. Instead of technical layers, we carved along <strong>business boundaries</strong>:</p>
+
+      <ul>
+        <li><strong>Customer Onboarding Service</strong>: Everything about getting customers started</li>
+        <li><strong>KYC Verification Service</strong>: Identity verification and compliance</li>
+        <li><strong>Payment Processing Service</strong>: Money movement and reconciliation</li>
+        <li><strong>Fraud Detection Service</strong>: Real-time transaction monitoring</li>
+      </ul>
+
+      <p>Each service owned its data, its business logic, and its deployment cycle. This made teams truly independent.</p>
+
+      <h2>Lesson 2: The Database Question</h2>
+
+      <p>One database per service or shared database? This debate nearly split the team.</p>
+
+      <p>We tried shared database first. Bad idea. Services coupled through database schemas. One team's schema change broke another team's queries. We were back to coordination hell.</p>
+
+      <p>We switched to <strong>database per service</strong>. Each service owned its database completely. No shared tables, no cross-service queries.</p>
+
+      <p>"But what about joins?" people asked.</p>
+
+      <p>We handled them through APIs or event sourcing. Yes, it's more code. Yes, it's slower than SQL joins. But the team independence was worth it.</p>
+
+      <h2>Lesson 3: Observability Becomes Critical</h2>
+
+      <p>Debugging the monolith was straightforward: check the logs, add a breakpoint, step through code.</p>
+
+      <p>Debugging microservices? A nightmare at first. A single customer onboarding flow touched 7 services. When something failed, good luck figuring out where.</p>
+
+      <p>We solved this with <strong>distributed tracing</strong>. Every request gets a trace ID that flows through all services. When something breaks, we can see the entire journey:</p>
+
+      <ul>
+        <li>Request hits API Gateway (12ms)</li>
+        <li>Onboarding Service calls KYC Service (245ms)</li>
+        <li>KYC Service calls External ID Verification API (1.8s — aha! Bottleneck found)</li>
+      </ul>
+
+      <p>Without tracing, we were flying blind. With it, debugging became manageable.</p>
+
+      <h2>Lesson 4: Microservices Create Operational Overhead</h2>
+
+      <p>Here's what nobody tells you: <strong>microservices multiply operational complexity</strong>.</p>
+
+      <p>The monolith: 1 deployment, 1 CI/CD pipeline, 1 monitoring dashboard, 1 log aggregator.</p>
+
+      <p>Microservices: 23 deployments, 23 pipelines, 23 dashboards, 23 log streams.</p>
+
+      <p>We invested heavily in standardization:</p>
+
+      <ul>
+        <li><strong>Service templates</strong>: New services start from a template with logging, monitoring, and deployment pre-configured</li>
+        <li><strong>Shared infrastructure</strong>: Centralized logging (ELK stack), monitoring (Prometheus + Grafana), tracing (Jaeger)</li>
+        <li><strong>Platform team</strong>: Dedicated team maintaining shared tooling and best practices</li>
+      </ul>
+
+      <p>Without standardization, each team would build things differently, and operational chaos would reign.</p>
+
+      <h2>Lesson 5: Not Everything Should Be a Microservice</h2>
+
+      <p>We got microservice-happy and broke things up too much. We created a "Currency Conversion Service" that did one thing: convert amounts between currencies. It was 200 lines of code that could've been a library.</p>
+
+      <p>Now it's a service with its own deployment, monitoring, and API. Total overkill.</p>
+
+      <p><strong>When to use microservices:</strong></p>
+      <ul>
+        <li>Different teams need to deploy independently</li>
+        <li>Different technology stacks are justified</li>
+        <li>Scaling requirements differ significantly</li>
+        <li>Business domains are naturally separated</li>
+      </ul>
+
+      <p><strong>When NOT to use microservices:</strong></p>
+      <ul>
+        <li>Your team is < 10 engineers</li>
+        <li>The domains aren't clearly separable</li>
+        <li>You don't have infrastructure for observability and deployment</li>
+        <li>It's just a utility function (make it a library instead)</li>
+      </ul>
+
+      <h2>What We Gained</h2>
+
+      <p>After three years, was it worth it?</p>
+
+      <p><strong>Yes.</strong> But not for the reasons you might think.</p>
+
+      <p>The win wasn't performance (actually worse due to network overhead). It wasn't cost savings (infrastructure costs went up).</p>
+
+      <p>The win was <strong>organizational velocity</strong>.</p>
+
+      <p>Teams can now deploy 20+ times per day instead of once per week. Features ship faster. Engineers feel ownership. Different teams can innovate with different technologies.</p>
+
+      <p>In banking, where compliance is king and downtime is unacceptable, that velocity is transformative.</p>
+
+      <blockquote>"Microservices are an organizational strategy disguised as a technical architecture."</blockquote>
+
+      <p><strong>Key Takeaways:</strong></p>
+      <ul>
+        <li>Start with business domains, not technical layers</li>
+        <li>One database per service — embrace API calls over joins</li>
+        <li>Invest in observability before going distributed</li>
+        <li>Standardize infrastructure or face operational chaos</li>
+        <li>Not everything needs to be a microservice — know when to stop</li>
+      </ul>
+
+      <div class="back-to-blog">
+        <a href="../blog.html">← Back to all articles</a>
+      </div>
+
+    </div>
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Dinesh Saini &middot; <a href="../index.html" style="color: var(--primary);">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Flags with GrowthBook: Deploy Fearlessly — Dinesh Saini</title>
+  <meta name="description" content="Using feature flags and GrowthBook for safe deployments, gradual rollouts, and A/B testing in production.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../blog.css">
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="nav scrolled">
+    <div class="container nav-inner">
+      <a href="../index.html" class="nav-logo">dinesh<span>saini</span></a>
+      <ul class="nav-links"><li><a href="../blog.html">← Back to Writing</a></li></ul>
+    </div>
+  </nav>
+
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-date">July 22, 2025</span>
+      <span class="article-category">DevOps</span>
+    </div>
+    <h1>Feature Flags with GrowthBook: Deploy Fearlessly</h1>
+  </header>
+
+  <article class="article-content">
+    <div class="container">
+
+      <p>We deployed a new payment flow on Friday afternoon. By 5pm, we realized it had a critical bug.</p>
+
+      <p>In the old days, this meant: revert the deploy, fix the bug, redeploy, hope nothing else broke. 2-3 hours of stress.</p>
+
+      <p>With feature flags? We toggled the flag off in 30 seconds. Users instantly fell back to the old flow. We fixed the bug Monday morning and toggled the flag back on.</p>
+
+      <p>No deploy. No rollback. No outage.</p>
+
+      <p>After implementing feature flags with GrowthBook across our banking platform, here's what actually works.</p>
+
+      <h2>What Are Feature Flags?</h2>
+
+      <p>Feature flags (aka feature toggles) are <strong>if statements controlled from outside your code</strong>.</p>
+
+      <pre><code>// Without feature flag
+function processPayment(payment) {
+  return newPaymentFlow(payment);
+}
+
+// With feature flag
+function processPayment(payment) {
+  if (featureFlags.isEnabled('new-payment-flow')) {
+    return newPaymentFlow(payment);
+  } else {
+    return oldPaymentFlow(payment);
+  }
+}</code></pre>
+
+      <p>The magic: <strong>You can toggle the flag without deploying code</strong>.</p>
+
+      <h2>Why Feature Flags Changed Everything</h2>
+
+      <p>Before feature flags, we faced a dilemma:</p>
+
+      <ul>
+        <li><strong>Merge incomplete work?</strong> Risk breaking production.</li>
+        <li><strong>Keep feature branches?</strong> Merge conflicts, integration hell.</li>
+      </ul>
+
+      <p>With feature flags, we ship incomplete features to production <em>hidden behind flags</em>. Then we:</p>
+      <ul>
+        <li>Test in production with real data</li>
+        <li>Roll out gradually (5% → 25% → 50% → 100%)</li>
+        <li>A/B test different implementations</li>
+        <li>Kill switch bad deploys instantly</li>
+      </ul>
+
+      <div class="diagram">
+        <p class="diagram-title">Deployment Strategy Evolution</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">Traditional: All-or-Nothing</div>
+            <div class="arch-layer-desc">
+              Deploy → Hope it works → Rollback if it doesn't (downtime)
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">With Feature Flags: Gradual Rollout</div>
+            <div class="arch-layer-desc">
+              Deploy (flag off) → Enable 5% → Monitor → Enable 100% (no downtime)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2>Feature Flag Patterns</h2>
+
+      <p>Not all flags are the same. Here are the patterns we use:</p>
+
+      <h3>1. Release Flags (Temporary)</h3>
+      <p><strong>Purpose:</strong> Hide incomplete features in production</p>
+      <p><strong>Lifetime:</strong> Days to weeks (delete after full rollout)</p>
+
+      <pre><code>if (flags.isEnabled('new-dashboard-ui')) {
+  return <NewDashboard />;
+} else {
+  return <OldDashboard />;
+}
+
+// After 100% rollout: Delete flag, delete old code</code></pre>
+
+      <h3>2. Ops Flags (Long-Lived)</h3>
+      <p><strong>Purpose:</strong> Operational control (rate limiting, maintenance mode)</p>
+      <p><strong>Lifetime:</strong> Permanent</p>
+
+      <pre><code>if (flags.isEnabled('maintenance-mode')) {
+  return 503 Service Unavailable;
+}
+
+if (flags.isEnabled('enable-rate-limiting')) {
+  applyRateLimit(user);
+}</code></pre>
+
+      <h3>3. Experiment Flags (A/B Testing)</h3>
+      <p><strong>Purpose:</strong> Compare multiple implementations</p>
+      <p><strong>Lifetime:</strong> Until experiment concludes</p>
+
+      <pre><code>const variant = flags.getVariant('checkout-button-color');
+// variant = 'blue' | 'green' | 'red'
+
+return <Button color={variant}>Checkout</Button>;
+
+// Track conversion rates, pick winner</code></pre>
+
+      <h3>4. Permission Flags (Entitlement)</h3>
+      <p><strong>Purpose:</strong> Enable features for specific users/tiers</p>
+      <p><strong>Lifetime:</strong> Permanent</p>
+
+      <pre><code>if (flags.isEnabled('advanced-analytics', { userId })) {
+  return <AdvancedAnalytics />;
+} else {
+  return <UpgradePrompt />;
+}</code></pre>
+
+      <h2>Why We Chose GrowthBook</h2>
+
+      <p>We evaluated LaunchDarkly, Split.io, Unleash, and rolled-our-own before choosing <strong>GrowthBook</strong>.</p>
+
+      <div class="diagram">
+        <p class="diagram-title">Feature Flag Platform Comparison</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--primary);">
+              <th style="text-align: left; padding: 10px;">Platform</th>
+              <th style="text-align: left; padding: 10px;">Pros</th>
+              <th style="text-align: left; padding: 10px;">Cons</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 10px;"><strong>LaunchDarkly</strong></td>
+              <td style="padding: 10px;">Enterprise features, great UI</td>
+              <td style="padding: 10px;">Expensive ($$$), vendor lock-in</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 10px;"><strong>Split.io</strong></td>
+              <td style="padding: 10px;">Advanced targeting, analytics</td>
+              <td style="padding: 10px;">Expensive ($$), complex setup</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 10px;"><strong>Unleash</strong></td>
+              <td style="padding: 10px;">Open source, self-hosted</td>
+              <td style="padding: 10px;">Basic UI, fewer integrations</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+              <td style="padding: 10px;"><strong>GrowthBook</strong></td>
+              <td style="padding: 10px;">Open source, A/B testing built-in, free tier</td>
+              <td style="padding: 10px;">Smaller community, newer</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px;"><strong>Roll Your Own</strong></td>
+              <td style="padding: 10px;">Full control, no vendor lock-in</td>
+              <td style="padding: 10px;">Build & maintain yourself</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Why GrowthBook won:</strong></p>
+      <ul>
+        <li><strong>Open source</strong>: Can self-host (critical for banking compliance)</li>
+        <li><strong>A/B testing built-in</strong>: Feature flags + experiments in one platform</li>
+        <li><strong>SQL-based analytics</strong>: Integrates with our existing data warehouse</li>
+        <li><strong>Edge computing support</strong>: Evaluate flags at CDN edge (low latency)</li>
+        <li><strong>Free tier</strong>: Try before committing</li>
+      </ul>
+
+      <h2>Architecture: How GrowthBook Works</h2>
+
+      <div class="diagram">
+        <p class="diagram-title">GrowthBook Architecture</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">1. GrowthBook Admin UI</div>
+            <div class="arch-layer-desc">
+              Product managers create/edit flags, set targeting rules
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">2. GrowthBook API</div>
+            <div class="arch-layer-desc">
+              Generates JSON payload with all flag definitions
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">3. CDN (Optional)</div>
+            <div class="arch-layer-desc">
+              Cache JSON payload for ultra-low latency (~10ms)
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">4. Application SDK</div>
+            <div class="arch-layer-desc">
+              Fetches payload, evaluates flags locally (no API calls per request)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p><strong>Key insight:</strong> GrowthBook SDKs evaluate flags <strong>locally</strong> (client-side or server-side). No network call per feature check = fast.</p>
+
+      <h2>Implementation: GrowthBook in Node.js</h2>
+
+      <p><strong>1. Install SDK:</strong></p>
+      <pre><code>npm install @growthbook/growthbook</code></pre>
+
+      <p><strong>2. Initialize GrowthBook:</strong></p>
+      <pre><code>const { GrowthBook } = require('@growthbook/growthbook');
+
+const gb = new GrowthBook({
+  apiHost: "https://cdn.growthbook.io",
+  clientKey: "sdk-abc123",
+  enableDevMode: process.env.NODE_ENV === 'development',
+
+  // Set user attributes for targeting
+  attributes: {
+    id: user.id,
+    email: user.email,
+    country: user.country,
+    plan: user.subscriptionPlan,
+    signupDate: user.createdAt
+  }
+});
+
+// Fetch feature definitions
+await gb.loadFeatures();</code></pre>
+
+      <p><strong>3. Check feature flags:</strong></p>
+      <pre><code>// Boolean flag
+if (gb.isOn('new-payment-flow')) {
+  processNewPayment();
+} else {
+  processOldPayment();
+}
+
+// Get variant (A/B test)
+const buttonColor = gb.getFeatureValue('checkout-button-color', 'blue');
+
+// Get complex feature value
+const config = gb.getFeatureValue('payment-config', {
+  maxAmount: 1000,
+  allowedCountries: ['US', 'CA']
+});</code></pre>
+
+      <p><strong>4. Track experiment exposure:</strong></p>
+      <pre><code>// Automatically track when user sees an experiment
+gb.setTrackingCallback((experiment, result) => {
+  analytics.track('Experiment Viewed', {
+    experimentId: experiment.key,
+    variationId: result.variationId,
+    userId: user.id
+  });
+});</code></pre>
+
+      <h2>Lesson 1: Start Simple, Avoid Over-Engineering</h2>
+
+      <p>Early mistake: We created flags for everything. 200+ flags within 3 months.</p>
+
+      <p>Problems:</p>
+      <ul>
+        <li>Nobody knew which flags were active</li>
+        <li>Old flags lingered (technical debt)</li>
+        <li>Code became unreadable (nested if statements)</li>
+      </ul>
+
+      <p><strong>Our new rules:</strong></p>
+
+      <ol>
+        <li><strong>Default to no flag</strong>: Only add flags for risky changes</li>
+        <li><strong>Naming convention</strong>: <code>release/new-payment-flow</code>, <code>ops/maintenance-mode</code>, <code>exp/checkout-button-color</code></li>
+        <li><strong>Expiration dates</strong>: Release flags auto-archive after 30 days</li>
+        <li><strong>Delete after rollout</strong>: When flag reaches 100%, remove code + flag</li>
+      </ol>
+
+      <h2>Lesson 2: Targeting Rules Are Powerful</h2>
+
+      <p>GrowthBook lets you enable features for specific users/segments without code changes.</p>
+
+      <p><strong>Example targeting rules:</strong></p>
+
+      <pre><code>// Enable for internal team only
+if (user.email.endsWith('@company.com')) {
+  enabled = true;
+}
+
+// Enable for 10% of users (gradual rollout)
+if (hash(user.id + flagKey) % 100 < 10) {
+  enabled = true;
+}
+
+// Enable for premium users in US
+if (user.plan === 'premium' && user.country === 'US') {
+  enabled = true;
+}</code></pre>
+
+      <p><strong>In GrowthBook UI:</strong></p>
+      <img src="https://docs.growthbook.io/images/targeting-rules.png" alt="GrowthBook targeting rules" style="max-width: 100%; margin: 20px 0; border: 1px solid #ddd; border-radius: 8px;">
+
+      <p>This lets product managers control rollouts without engineering involvement.</p>
+
+      <h2>Lesson 3: Feature Flags ≠ Technical Debt (If Managed)</h2>
+
+      <p>Flags become debt when you forget to remove them.</p>
+
+      <p><strong>Our flag lifecycle:</strong></p>
+
+      <div class="diagram">
+        <p class="diagram-title">Feature Flag Lifecycle</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">1. Creation</div>
+            <div class="arch-layer-desc">
+              Engineer creates flag, sets expiration (30 days)
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">2. Gradual Rollout</div>
+            <div class="arch-layer-desc">
+              0% → 5% → 25% → 50% → 100% over 2 weeks
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">3. Stabilization</div>
+            <div class="arch-layer-desc">
+              Run at 100% for 1 week, monitor metrics
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">4. Cleanup</div>
+            <div class="arch-layer-desc">
+              Remove flag from code, delete old implementation
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p><strong>Automated cleanup:</strong></p>
+      <ul>
+        <li>Weekly Slack reminder: "5 flags expire this week"</li>
+        <li>CI fails if flag older than 90 days (forces cleanup)</li>
+        <li>GrowthBook archives unused flags automatically</li>
+      </ul>
+
+      <h2>System Design: Edge-Based Flag Evaluation</h2>
+
+      <p>For low-latency flag checks, we evaluate at the CDN edge (Cloudflare Workers).</p>
+
+      <div class="diagram">
+        <p class="diagram-title">Edge Flag Evaluation</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">Traditional (Slow)</div>
+            <div class="arch-layer-desc">
+              User → Server → GrowthBook API → Server → User (200ms)
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">Edge-Based (Fast)</div>
+            <div class="arch-layer-desc">
+              User → Cloudflare Worker (evaluates flags locally) → Server (10ms)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p><strong>Cloudflare Worker example:</strong></p>
+      <pre><code>import { GrowthBook } from '@growthbook/growthbook';
+
+export default {
+  async fetch(request, env) {
+    const gb = new GrowthBook({
+      attributes: {
+        id: request.headers.get('X-User-ID'),
+        country: request.cf.country
+      },
+      features: JSON.parse(await env.KV.get('growthbook-features'))
+    });
+
+    if (gb.isOn('new-payment-flow')) {
+      return fetch('https://api.example.com/v2/payment', request);
+    } else {
+      return fetch('https://api.example.com/v1/payment', request);
+    }
+  }
+};</code></pre>
+
+      <p>GrowthBook's feature JSON is cached in Cloudflare KV (edge storage), so evaluation is nearly instant.</p>
+
+      <h2>A/B Testing with GrowthBook</h2>
+
+      <p>GrowthBook's killer feature: <strong>built-in A/B testing</strong>.</p>
+
+      <p><strong>Example: Test checkout button colors</strong></p>
+
+      <pre><code>// Define experiment in GrowthBook UI
+Experiment: checkout-button-color
+Variants: blue (50%), green (50%)
+Metrics: conversion_rate, revenue_per_user
+
+// In code
+const color = gb.getFeatureValue('checkout-button-color', 'blue');
+return <Button color={color}>Checkout</Button>;
+
+// GrowthBook tracks which users saw which variant</code></pre>
+
+      <p><strong>GrowthBook analyzes results automatically:</strong></p>
+      <ul>
+        <li>Statistical significance (Bayesian statistics)</li>
+        <li>Confidence intervals</li>
+        <li>Winner determination</li>
+        <li>SQL queries against your data warehouse</li>
+      </ul>
+
+      <p>After 2 weeks: "Green button increased conversion by 8% (95% confidence). Ship it!"</p>
+
+      <h2>Real-World Example: Safe Payment Flow Migration</h2>
+
+      <p>We rewrote our payment processing flow (high risk). Here's how we rolled it out:</p>
+
+      <p><strong>Week 1: Internal testing</strong></p>
+      <pre><code>// Enable for employees only
+if (user.email.endsWith('@company.com')) {
+  enabled = true;
+}</code></pre>
+
+      <p><strong>Week 2: Beta users (5%)</strong></p>
+      <pre><code>// Gradual rollout to 5% of users
+if (hash(user.id) % 100 < 5) {
+  enabled = true;
+}</code></pre>
+
+      <p><strong>Week 3: Ramp to 50%</strong></p>
+      <p>Monitored metrics: success rate, latency, error rate. All looked good.</p>
+
+      <p><strong>Week 4: 100% rollout</strong></p>
+      <p>Everyone on new flow. No incidents.</p>
+
+      <p><strong>Week 5: Cleanup</strong></p>
+      <ul>
+        <li>Deleted old payment code</li>
+        <li>Removed feature flag</li>
+        <li>Shipped 500 fewer lines of code</li>
+      </ul>
+
+      <p><strong>Total risk:</strong> Near zero. If anything went wrong, we'd toggle the flag off instantly.</p>
+
+      <h2>Monitoring & Observability</h2>
+
+      <p>Track these metrics:</p>
+
+      <ul>
+        <li><strong>Flag evaluation latency</strong>: Should be <10ms (local evaluation)</li>
+        <li><strong>Feature payload fetch time</strong>: How long to load flag definitions</li>
+        <li><strong>Flag usage</strong>: Which flags are checked most often</li>
+        <li><strong>Stale flags</strong>: Flags older than 90 days (technical debt)</li>
+      </ul>
+
+      <p><strong>GrowthBook provides analytics:</strong></p>
+      <ul>
+        <li>Experiment results (conversion rates, confidence)</li>
+        <li>Feature usage (how many users see each variant)</li>
+        <li>SDK performance metrics</li>
+      </ul>
+
+      <h2>Security Considerations</h2>
+
+      <p><strong>1. Client-side vs Server-side flags</strong></p>
+      <ul>
+        <li><strong>Client-side (JS/mobile):</strong> Users can see flag values (inspect network). Only use for UI changes.</li>
+        <li><strong>Server-side (Node/Python):</strong> Secure. Use for sensitive features (payment flows, admin access).</li>
+      </ul>
+
+      <p><strong>2. Encrypt sensitive flag payloads</strong></p>
+      <p>If flags contain sensitive config (API keys, feature limits), encrypt the payload.</p>
+
+      <p><strong>3. Audit flag changes</strong></p>
+      <p>GrowthBook logs who changed flags and when. Critical for compliance.</p>
+
+      <h2>The Results</h2>
+
+      <p>After 18 months with feature flags:</p>
+
+      <ul>
+        <li><strong>Deploy frequency</strong>: 5/day → 20/day (trunk-based development)</li>
+        <li><strong>Rollback rate</strong>: 15% → 2% (flags instead of rollbacks)</li>
+        <li><strong>Mean time to recovery</strong>: 45 min → 2 min (toggle flag off)</li>
+        <li><strong>A/B tests run</strong>: 0 → 30+ experiments/quarter</li>
+        <li><strong>Production incidents</strong>: Down 60% (safer deployments)</li>
+      </ul>
+
+      <h2>Key Takeaways</h2>
+
+      <ol>
+        <li><strong>Feature flags enable trunk-based development</strong>: Ship incomplete work safely.</li>
+        <li><strong>Gradual rollouts reduce risk</strong>: 5% → 100% over days, not all-or-nothing.</li>
+        <li><strong>Kill switches save incidents</strong>: Toggle off bad features in seconds.</li>
+        <li><strong>A/B testing drives decisions</strong>: Data beats opinions.</li>
+        <li><strong>Clean up old flags</strong>: Set expiration dates, automate reminders.</li>
+        <li><strong>GrowthBook is great for startups/mid-market</strong>: Open source, affordable, A/B testing built-in.</li>
+      </ol>
+
+      <h2>Further Reading & References</h2>
+
+      <p><strong>Official Documentation:</strong></p>
+      <ul>
+        <li><a href="https://docs.growthbook.io/" target="_blank">GrowthBook Documentation</a> - Complete guide</li>
+        <li><a href="https://docs.growthbook.io/lib" target="_blank">GrowthBook SDKs</a> - Node.js, React, Python, Go, etc.</li>
+        <li><a href="https://www.growthbook.io/blog" target="_blank">GrowthBook Blog</a> - Best practices & case studies</li>
+      </ul>
+
+      <p><strong>Alternative Platforms:</strong></p>
+      <ul>
+        <li><a href="https://launchdarkly.com/" target="_blank">LaunchDarkly</a> - Enterprise feature flag platform</li>
+        <li><a href="https://www.split.io/" target="_blank">Split.io</a> - Feature flags + experimentation</li>
+        <li><a href="https://www.getunleash.io/" target="_blank">Unleash</a> - Open source feature flags</li>
+      </ul>
+
+      <p><strong>Feature Flag Patterns:</strong></p>
+      <ul>
+        <li><a href="https://martinfowler.com/articles/feature-toggles.html" target="_blank">Martin Fowler: Feature Toggles</a> - Comprehensive guide</li>
+        <li><a href="https://trunkbaseddevelopment.com/feature-flags/" target="_blank">Trunk Based Development: Feature Flags</a></li>
+      </ul>
+
+      <p><strong>Books:</strong></p>
+      <ul>
+        <li>"Feature Flag Best Practices" (LaunchDarkly eBook)</li>
+        <li>"Accelerate" by Nicole Forsgren - Data on deployment frequency & feature flags</li>
+      </ul>
+
+      <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
+
+      <p><em>Feature flags changed how we ship software. We went from fearing deployments to deploying 20 times a day. The secret? Decouple deployment from release.</em></p>
+
+      <p><em>Want to implement feature flags in your system? <a href="../index.html#contact">Let's talk</a>.</em></p>
+
+    </div>
+  </article>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Dinesh Saini &middot; <a href="../blog.html" style="color: var(--primary);">Back to Writing</a> &middot; <a href="../index.html" style="color: var(--primary);">Home</a></p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

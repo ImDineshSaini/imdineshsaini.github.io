@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAG Pipelines in Production: Beyond the Hype — Dinesh Saini</title>
+  <meta name="description" content="Real-world lessons from running RAG (Retrieval-Augmented Generation) in production for KYC compliance.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../themes.css">
+  <link rel="stylesheet" href="../blog.css">
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav scrolled" id="nav">
+    <div class="container nav-inner">
+      <a href="../index.html" class="nav-logo">dinesh<span>saini</span></a>
+      <ul class="nav-links">
+        <li><a href="../blog.html">← Back to Writing</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Article Header -->
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="article-date">December 8, 2025</span>
+      <span class="article-category">Architecture</span>
+    </div>
+    <h1>RAG Pipelines in Production: Beyond the Hype</h1>
+  </header>
+
+  <!-- Article Content -->
+  <article class="article-content">
+    <div class="container">
+
+      <p>Everyone talks about RAG like it's magic. Embed your documents, search for relevant chunks, generate an answer. Easy, right?</p>
+
+      <p>After running RAG in production for six months powering our KYC compliance system, I've learned it's more art than science. The theory is simple. The practice is full of edge cases, trade-offs, and decisions that dramatically impact quality.</p>
+
+      <p>Here's what nobody tells you about RAG until you're neck-deep in production issues at 2 AM.</p>
+
+      <h2>The Problem: Compliance Questions at Scale</h2>
+
+      <p>Our digital banking platform handles customer onboarding across 12 countries, each with different KYC and AML regulations. Support teams were constantly asking: "Does this document meet India's KYC requirements?" or "What's the minimum age for account opening in Germany?"</p>
+
+      <p>We had the answers buried in 2,000+ pages of regulatory documentation. Finding them meant searching through PDFs, cross-referencing regulations, and hoping you found the right section.</p>
+
+      <p>Enter RAG. The promise: <em>Ask questions in natural language, get accurate answers grounded in our documentation</em>.</p>
+
+      <p>The reality: It took us three months of iteration to get from "sometimes works" to "actually reliable."</p>
+
+      <h2>The Basic Architecture</h2>
+
+      <div class="diagram">
+        <p class="diagram-title">RAG Pipeline Architecture</p>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-title">1. Document Processing</div>
+            <div class="arch-layer-desc">PDFs → Clean Text → Chunking</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">2. Embedding</div>
+            <div class="arch-layer-desc">Chunks → Vector Embeddings</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">3. Vector Storage</div>
+            <div class="arch-layer-desc">Store + Index for Fast Search</div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-title">4. Query Pipeline</div>
+            <div class="arch-layer-desc">Question → Search → Generate Answer</div>
+          </div>
+        </div>
+      </div>
+
+      <p>Looks straightforward on a diagram. In practice, each of these steps has 10 decisions that affect your results.</p>
+
+      <h2>Lesson 1: Chunking is Harder Than It Looks</h2>
+
+      <p>The first version of our system just split documents every 500 tokens. Simple. Fast. Terrible.</p>
+
+      <p>We'd get answers like: "According to Section 4, customers must provide..." — except Section 4 was about something completely different, and the actual requirement was in Section 7.</p>
+
+      <p>The problem? <strong>Naive chunking breaks context</strong>.</p>
+
+      <p>Imagine splitting this sentence mid-way: "Customers under 18 years old <em>[CHUNK BOUNDARY]</em> are not eligible for premium accounts." Now one chunk says customers under 18 are fine, and another says they're not eligible. Both chunks are technically accurate, but neither tells the full story.</p>
+
+      <p>We fixed this by implementing <em>semantic chunking</em>:</p>
+
+      <ul>
+        <li>Respect document structure (don't split mid-sentence or mid-paragraph)</li>
+        <li>Keep related content together (regulatory requirements with their exceptions)</li>
+        <li>Add metadata (section headers, document title, country) to each chunk</li>
+        <li>Use overlapping chunks (last 100 tokens of one chunk = first 100 tokens of next)</li>
+      </ul>
+
+      <p>Retrieval accuracy jumped from 62% to 89% just by chunking smarter.</p>
+
+      <h2>Lesson 2: Embeddings Are Not Created Equal</h2>
+
+      <p>We started with OpenAI's <code>text-embedding-ada-002</code>. It worked okay for general questions but struggled with domain-specific terminology.</p>
+
+      <p>"What is PEP screening?" would return chunks about "pepper screening" (a food safety term) instead of "Politically Exposed Person screening" (a KYC term).</p>
+
+      <p>The fix wasn't switching embedding models (though we tried). It was <strong>fine-tuning our retrieval</strong>:</p>
+
+      <ul>
+        <li>Build a domain-specific glossary as a vector lookup table</li>
+        <li>Use hybrid search (vector similarity + keyword matching)</li>
+        <li>Add query expansion (transform "PEP" into "Politically Exposed Person")</li>
+        <li>Rerank results using a cross-encoder model</li>
+      </ul>
+
+      <p>Hybrid search was the game-changer. Pure vector search is great for semantic similarity, but it misses exact matches. Combining both gives you the best of both worlds.</p>
+
+      <h2>Lesson 3: Retrieval Matters More Than Generation</h2>
+
+      <p>Here's a surprising truth: <strong>80% of RAG quality comes from retrieval, not generation</strong>.</p>
+
+      <p>If you retrieve the wrong chunks, even GPT-4 can't save you. It'll confidently generate an answer based on irrelevant context.</p>
+
+      <p>We learned this the hard way when our system told a support agent that German customers needed to provide a "passport or driver's license" for KYC. Technically true, but incomplete — German regulations also accept national ID cards, which most Germans actually use.</p>
+
+      <p>Why? The retrieval only pulled 3 chunks, and the chunk mentioning national ID cards ranked 4th.</p>
+
+      <p>The solution: <strong>retrieve more, rank better</strong>.</p>
+
+      <ul>
+        <li>Retrieve top 10 chunks (not just top 3)</li>
+        <li>Rerank them using a specialized cross-encoder</li>
+        <li>Pass top 5 reranked chunks to the LLM</li>
+        <li>Include a confidence score for each chunk</li>
+      </ul>
+
+      <p>This added 200ms to latency but cut incorrect answers by 60%.</p>
+
+      <h2>Lesson 4: Metadata is Your Friend</h2>
+
+      <p>Early on, we'd get questions like "What are the age requirements?" — but age requirements vary by country and account type.</p>
+
+      <p>Without context, the system would return a random answer, sometimes from the wrong country's regulations.</p>
+
+      <p>We fixed this by treating metadata as a first-class citizen:</p>
+
+      <ul>
+        <li><strong>Document metadata</strong>: country, regulation type, last updated date</li>
+        <li><strong>Chunk metadata</strong>: section header, page number, document title</li>
+        <li><strong>Query metadata</strong>: user's role, customer's country, account type</li>
+      </ul>
+
+      <p>Now when someone asks "What are the age requirements?", the system uses their context (they're supporting a German customer) to filter chunks before semantic search.</p>
+
+      <p>This is RAG 2.0: <em>context-aware retrieval</em>.</p>
+
+      <h2>Lesson 5: Monitoring is Non-Negotiable</h2>
+
+      <p>In production, things drift. Documents get updated, regulations change, user questions evolve.</p>
+
+      <p>We monitor:</p>
+
+      <ul>
+        <li><strong>Retrieval metrics</strong>: How often do retrieved chunks actually contain the answer? (We sample 10% of queries for manual review)</li>
+        <li><strong>Confidence scores</strong>: When the system is unsure (low confidence), we flag it for human review</li>
+        <li><strong>Fallback rate</strong>: How often does the system say "I don't know"?</li>
+        <li><strong>User feedback</strong>: Thumbs up/down on answers</li>
+      </ul>
+
+      <p>When we see retrieval accuracy drop below 85%, it's usually a sign that new documents were added without re-embedding the collection.</p>
+
+      <h2>Lesson 6: Know When to Say "I Don't Know"</h2>
+
+      <p>The most dangerous thing an AI system can do is <em>confidently give wrong answers</em>.</p>
+
+      <p>We explicitly prompt our LLM:</p>
+
+      <blockquote>
+        "If the retrieved context doesn't contain enough information to answer the question accurately, say 'I don't have enough information to answer this question.' Do NOT make up answers."
+      </blockquote>
+
+      <p>And we enforce this with confidence thresholds. If the top-ranked chunk scores below 0.7, we return "Not enough information found" instead of generating an answer.</p>
+
+      <p>False negatives (saying "I don't know" when we could answer) are annoying. False positives (confidently giving wrong answers) are dangerous.</p>
+
+      <p>In banking, dangerous is unacceptable.</p>
+
+      <h2>What We'd Do Differently</h2>
+
+      <p>If I were building this system again from scratch, I'd:</p>
+
+      <ul>
+        <li><strong>Start with hybrid search</strong>, not pure vector search</li>
+        <li><strong>Invest in evaluation early</strong> — build a test set of questions with known answers</li>
+        <li><strong>Use a reranker</strong> from day one, not as an afterthought</li>
+        <li><strong>Add human-in-the-loop feedback</strong> from the start — let users mark wrong answers</li>
+        <li><strong>Build for observability</strong> — log everything, you'll need it for debugging</li>
+      </ul>
+
+      <h2>The Reality Check</h2>
+
+      <p>RAG isn't magic. It's a powerful pattern, but it requires careful engineering to work reliably in production.</p>
+
+      <p>The good news? When it works, it's transformative. Our support team now answers compliance questions in seconds instead of minutes. Accuracy is above 90%. And the system keeps learning from feedback.</p>
+
+      <p>But getting there took work. If you're building RAG systems, budget time for iteration. The first version won't be production-ready, and that's okay.</p>
+
+      <blockquote>
+        "RAG isn't plug-and-play. It's a framework that needs tuning, monitoring, and continuous improvement."
+      </blockquote>
+
+      <p><strong>Key Takeaways:</strong></p>
+      <ul>
+        <li>Chunking strategy dramatically impacts retrieval quality</li>
+        <li>Hybrid search (vector + keyword) beats pure vector search</li>
+        <li>80% of quality comes from retrieval, not generation</li>
+        <li>Metadata enables context-aware, accurate retrieval</li>
+        <li>Monitor retrieval metrics, not just generation quality</li>
+        <li>Embrace "I don't know" — it's better than being confidently wrong</li>
+      </ul>
+
+      <p>Building production RAG systems? I'd love to hear your war stories. <a href="../index.html#contact" style="color: var(--primary);">Let's connect</a>.</p>
+
+      <div class="back-to-blog">
+        <a href="../blog.html">← Back to all articles</a>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Dinesh Saini &middot; <a href="../index.html" style="color: var(--primary);">Home</a> &middot; <a href="../blog.html" style="color: var(--primary);">Writing</a></p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>
