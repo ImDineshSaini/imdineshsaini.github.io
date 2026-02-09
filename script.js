@@ -27,7 +27,7 @@ navLinks.querySelectorAll('a').forEach(link => {
 const sections = document.querySelectorAll('section[id]');
 
 function updateActiveNav() {
-  const scrollY = window.scrollY + 100;
+  const scrollY = window.scrollY + 120;
   sections.forEach(section => {
     const top = section.offsetTop;
     const height = section.offsetHeight;
@@ -42,13 +42,13 @@ function updateActiveNav() {
 window.addEventListener('scroll', updateActiveNav);
 
 // ============================================
-// Scroll Reveal
+// Scroll Reveal (IntersectionObserver)
 // ============================================
 function initReveal() {
   const revealElements = document.querySelectorAll(
-    '.timeline-item, .expertise-card, .project-card, .article-card, ' +
-    '.edu-card, .volunteer-card, .metric-card, .impact-card, ' +
-    '.about-text, .about-metrics, .arch-layer'
+    '.tl-item, .exp-card, .arch-card, .art-card, ' +
+    '.stat-card, .impact-card, .edu-item, ' +
+    '.about-text, .about-cards'
   );
 
   revealElements.forEach(el => el.classList.add('reveal'));
@@ -57,31 +57,50 @@ function initReveal() {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
       }
     });
   }, {
-    threshold: 0.08,
-    rootMargin: '0px 0px -30px 0px'
+    threshold: 0.06,
+    rootMargin: '0px 0px -40px 0px'
   });
 
   revealElements.forEach(el => observer.observe(el));
 }
 
 // ============================================
-// Hero entrance animation
+// Staggered reveal for grid children
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
-  initReveal();
-
-  const heroElements = document.querySelectorAll(
-    '.hero-badge, .hero-name, .hero-title, .hero-subtitle, ' +
-    '.hero-tags, .hero-cta'
+function initStaggeredReveal() {
+  const grids = document.querySelectorAll(
+    '.expertise-grid, .impact-grid, .articles-grid, .about-cards, .arch-grid'
   );
 
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const children = entry.target.children;
+        Array.from(children).forEach((child, i) => {
+          child.style.transitionDelay = `${i * 0.08}s`;
+        });
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.05
+  });
+
+  grids.forEach(grid => observer.observe(grid));
+}
+
+// ============================================
+// Hero entrance animation
+// ============================================
+function initHeroAnimation() {
+  const heroElements = document.querySelectorAll('.anim-fade');
+
   heroElements.forEach((el, i) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(16px)';
-    el.style.transition = `opacity 0.45s ease ${i * 0.08}s, transform 0.45s ease ${i * 0.08}s`;
+    el.style.transition = `opacity 0.55s ease ${i * 0.1}s, transform 0.55s ease ${i * 0.1}s`;
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         el.style.opacity = '1';
@@ -89,4 +108,40 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+}
+
+// ============================================
+// Subtle orb parallax on mouse move
+// ============================================
+function initOrbParallax() {
+  const orbs = document.querySelectorAll('.orb');
+  if (!orbs.length) return;
+
+  let ticking = false;
+  document.addEventListener('mousemove', (e) => {
+    if (ticking) return;
+    ticking = true;
+
+    requestAnimationFrame(() => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+      orbs.forEach((orb, i) => {
+        const speed = (i + 1) * 8;
+        orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+      });
+
+      ticking = false;
+    });
+  });
+}
+
+// ============================================
+// Initialize
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  initReveal();
+  initStaggeredReveal();
+  initHeroAnimation();
+  initOrbParallax();
 });
