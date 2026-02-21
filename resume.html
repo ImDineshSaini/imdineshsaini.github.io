@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dinesh Saini — Resume</title>
-  <meta name="description" content="Resume of Dinesh Saini — Software Architect @SBS | Digital Banking &amp; AI Innovation | Ex-Oracle | Multi-Cloud (AWS, Azure) | AI Engineering | Ruby &amp; Python">
+  <meta name="description" content="Resume of Dinesh Saini — Software Architect | Digital Banking &amp; AI Innovation | Multi-Cloud (AWS, Azure, OCI) | AI Engineering | Microservices | Ruby &amp; Python">
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,10 +62,29 @@
       overflow: hidden;
     }
 
+    /* Accent stripe at top */
+    .resume-wrapper::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark), var(--primary));
+    }
+
     .resume { padding: 48px 56px; }
 
     /* Header */
-    .r-header { margin-bottom: 28px; border-bottom: 2px solid var(--primary); padding-bottom: 20px; }
+    .r-header {
+      margin-bottom: 28px; border-bottom: 2px solid var(--primary); padding-bottom: 20px;
+      display: flex; align-items: flex-start; gap: 20px;
+    }
+    .r-initials {
+      width: 56px; height: 56px; flex-shrink: 0;
+      background: var(--primary); color: #fff; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .r-header-info { flex: 1; }
     .r-name {
       font-family: 'Lora', serif; font-size: 28px; font-weight: 700;
       color: var(--text); margin-bottom: 4px; letter-spacing: -0.02em;
@@ -76,8 +95,12 @@
     }
     .r-contact {
       font-family: 'Poppins', sans-serif;
-      font-size: 11.5px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 16px;
+      font-size: 11.5px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 14px;
     }
+    .r-contact-item {
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .r-contact-item svg { opacity: 0.5; flex-shrink: 0; }
     .r-contact a { color: var(--primary); text-decoration: none; transition: color 0.2s; }
     .r-contact a:hover { color: var(--primary-dark); }
     .r-sep { display: none; }
@@ -89,7 +112,9 @@
       font-size: 12px; font-weight: 700; color: var(--primary);
       text-transform: uppercase; letter-spacing: 1.5px;
       margin-bottom: 12px; padding-bottom: 4px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: none;
+      padding-left: 12px;
+      border-left: 3px solid var(--primary);
     }
 
     /* Summary */
@@ -173,18 +198,25 @@
       }
       .resume { padding: 0 !important; }
 
+      /* Hide decorative elements in print */
+      .resume-wrapper::before { display: none !important; }
+      .r-initials { display: none !important; }
+      .r-contact-item svg { display: none !important; }
+
       /* Header — clean, black text */
       .r-header {
         margin-bottom: 8px !important; padding-bottom: 6px !important;
         border-bottom: 2px solid #000 !important;
+        display: block !important;
       }
+      .r-header-info { display: block !important; }
       .r-name {
         font-size: 18px !important; color: #000 !important;
         font-weight: 700 !important; margin-bottom: 1px !important;
       }
       .r-title {
-        font-size: 9.5px !important; color: #333 !important;
-        font-weight: 600 !important; margin-bottom: 4px !important;
+        font-size: 9.5px !important; color: #000 !important;
+        font-weight: 700 !important; margin-bottom: 4px !important;
       }
       .r-contact {
         font-size: 9.5px !important; color: #333 !important; gap: 4px !important;
@@ -203,6 +235,7 @@
         font-size: 10px !important; color: #000 !important; font-weight: 700 !important;
         text-transform: uppercase !important; letter-spacing: 1.5px !important;
         margin-bottom: 4px !important; padding-bottom: 2px !important;
+        border-left: none !important; padding-left: 0 !important;
         border-bottom: 1px solid #000 !important;
       }
 
@@ -269,7 +302,7 @@
 
     @media (max-width: 768px) {
       .resume { padding: 32px 24px; }
-      .r-header { text-align: center; }
+      .r-header { text-align: center; flex-direction: column; align-items: center; }
       .r-contact { justify-content: center; }
       .r-job-header { flex-direction: column; }
       .r-skills-grid { grid-template-columns: 1fr; }
@@ -297,18 +330,21 @@
 
       <!-- Header -->
       <div class="r-header">
-        <h1 class="r-name">Dinesh Saini</h1>
-        <p class="r-title">Software Architect | Digital Banking &amp; AI | Ex-Oracle | Microservices | AWS, Azure, Docker, Kubernetes</p>
-        <div class="r-contact">
-          <span>Noida, India</span>
-          <span class="r-sep" aria-hidden="true">|</span>
-          <span>ai.dineshsaini@gmail.com</span>
-          <span class="r-sep" aria-hidden="true">|</span>
-          <span>+91 9888780808</span>
-          <span class="r-sep" aria-hidden="true">|</span>
-          <a href="https://www.linkedin.com/in/imdineshsaini/">linkedin.com/in/imdineshsaini</a>
-          <span class="r-sep" aria-hidden="true">|</span>
-          <a href="https://imdineshsaini.github.io">imdineshsaini.github.io</a>
+        <div class="r-initials">DS</div>
+        <div class="r-header-info">
+          <h1 class="r-name">Dinesh Saini</h1>
+          <p class="r-title">Software Architect | Digital Banking &amp; AI Innovation | Multi-Cloud (AWS, Azure, OCI) | AI Engineering | Microservices | Ruby &amp; Python</p>
+          <div class="r-contact">
+            <span class="r-contact-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Noida, India</span>
+            <span class="r-sep" aria-hidden="true">|</span>
+            <span class="r-contact-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg> ai.dineshsaini@gmail.com</span>
+            <span class="r-sep" aria-hidden="true">|</span>
+            <span class="r-contact-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> +91 9888780808</span>
+            <span class="r-sep" aria-hidden="true">|</span>
+            <span class="r-contact-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg> <a href="https://www.linkedin.com/in/imdineshsaini/">linkedin.com/in/imdineshsaini</a></span>
+            <span class="r-sep" aria-hidden="true">|</span>
+            <span class="r-contact-item"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> <a href="https://imdineshsaini.github.io">imdineshsaini.github.io</a></span>
+          </div>
         </div>
       </div>
 
@@ -316,7 +352,7 @@
       <div class="r-section">
         <h2 class="r-section-title">Professional Summary</h2>
         <p class="r-summary">
-          Software Architect with <strong>13+ years</strong> of experience designing scalable, secure, high-performance system architectures in regulated banking. Expert in <strong>Microservices Architecture</strong> using <strong>Ruby on Rails</strong> and <strong>Python</strong>. Proficient in <strong>AWS</strong>, <strong>Azure</strong>, <strong>Docker</strong>, <strong>Kubernetes</strong>. Leading AI strategy with <strong>Enterprise RAG</strong>, <strong>LLM orchestration</strong>, and <strong>AI Agents</strong> achieving <strong>30%</strong> SDLC effort reduction. Experienced in cloud-native design, <strong>CI/CD</strong> automation, and technical leadership of teams up to <strong>10 engineers</strong>.
+          Software Architect with <strong>13+ years</strong> of experience designing scalable, secure, high-performance system architectures in regulated banking. Expert in <strong>Microservices Architecture</strong> using <strong>Ruby on Rails</strong> and <strong>Python</strong>. Proficient in multi-cloud environments across <strong>AWS</strong>, <strong>Azure</strong>, and <strong>OCI</strong> with <strong>Docker</strong> and <strong>Kubernetes</strong>. Drives AI strategy with <strong>Enterprise RAG</strong>, <strong>LLM orchestration</strong>, and <strong>AI Agents</strong>, achieving <strong>30%</strong> SDLC effort reduction. Experienced in cloud-native design, <strong>CI/CD</strong> automation, and technical leadership of teams up to <strong>10 engineers</strong>.
         </p>
       </div>
 
@@ -333,7 +369,7 @@
           <ul class="r-job-details">
             <li>Lead Architect for <strong>Digital Banking Suite</strong> serving <strong>6 global banks</strong> across onboarding, <strong>KYC</strong>, and <strong>AML</strong> compliance</li>
             <li>Decomposed monolithic banking module into <strong>8 microservices</strong> on <strong>Docker</strong> and <strong>Kubernetes</strong> across <strong>AWS</strong> and <strong>Azure</strong></li>
-            <li>Leading AI strategy; founded <strong>Engineering AI Hub</strong> with <strong>RAG</strong>, <strong>LLM orchestration</strong>, and <strong>3 AI agent</strong> frameworks used by <strong>30+</strong> developers</li>
+            <li>Founded <strong>Engineering AI Hub</strong> driving AI strategy with <strong>RAG</strong>, <strong>LLM orchestration</strong>, and <strong>3 AI-agent</strong> frameworks adopted by <strong>30+</strong> developers</li>
           </ul>
           <div class="r-tags">
             <span class="r-tag">Microservices</span><span class="r-tag">Docker</span><span class="r-tag">Kubernetes</span><span class="r-tag">AI Agents</span><span class="r-tag">Event-Driven</span><span class="r-tag">AWS</span><span class="r-tag">Azure</span>
