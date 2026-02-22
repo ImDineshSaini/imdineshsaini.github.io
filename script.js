@@ -175,6 +175,60 @@ function initOrbParallax() {
 }
 
 // ============================================
+// Copy buttons for code blocks & playgrounds
+// ============================================
+function initCodeCopyButtons() {
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wrapper = btn.closest('.code-block-wrapper') || btn.closest('.playground');
+      const code = wrapper ? wrapper.querySelector('code') : null;
+      if (!code) return;
+
+      navigator.clipboard.writeText(code.textContent).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  });
+}
+
+// ============================================
+// Reading time calculator
+// ============================================
+function initReadingTime() {
+  const el = document.querySelector('.article-reading-time');
+  const article = document.querySelector('.article-content');
+  if (!el || !article) return;
+
+  const words = article.textContent.trim().split(/\s+/).length;
+  const minutes = Math.max(1, Math.round(words / 200));
+  el.textContent = minutes + ' min read';
+}
+
+// ============================================
+// TOC smooth scroll with nav offset
+// ============================================
+function initTocScroll() {
+  document.querySelectorAll('.article-toc a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (!href || !href.startsWith('#')) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      window.scrollTo({
+        top: target.offsetTop - 80,
+        behavior: 'smooth'
+      });
+    });
+  });
+}
+
+// ============================================
 // Initialize
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -183,4 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStaggeredReveal();
   initHeroAnimation();
   initOrbParallax();
+  initCodeCopyButtons();
+  initReadingTime();
+  initTocScroll();
 });

@@ -4,7 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Automation Workflows: When LLMs Actually Make Sense — Dinesh Saini</title>
-  <meta name="description" content="LLM-powered automation with real examples - agentic workflows with LangChain and CrewAI, cost-benefit analysis, and when to automate vs keep manual.">
+  <meta name="description" content="Real-world LLM automation examples — support triage, contract review, multi-agent workflows with LangChain and CrewAI, plus cost-benefit analysis.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "AI Automation Workflows: When LLMs Actually Make Sense",
+    "author": {"@type": "Person", "name": "Dinesh Saini"},
+    "datePublished": "2025-10-08",
+    "description": "Real-world LLM automation examples — support triage, contract review, multi-agent workflows with LangChain and CrewAI, plus cost-benefit analysis."
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,14 +29,15 @@
   <nav class="nav scrolled">
     <div class="container nav-inner">
       <a href="../index.html" class="nav-logo">dinesh<span>saini</span></a>
-      <ul class="nav-links"><li><a href="../blog.html">← Back to Writing</a></li></ul>
+      <ul class="nav-links"><li><a href="../blog.html">&larr; Back to Writing</a></li></ul>
     </div>
   </nav>
 
   <header class="article-header">
     <div class="article-meta">
       <span class="article-date">October 8, 2025</span>
-      <span class="article-category">AI & Automation</span>
+      <span class="article-category">AI &amp; Automation</span>
+      <span class="article-reading-time"></span>
     </div>
     <h1>AI Automation Workflows: When LLMs Actually Make Sense</h1>
   </header>
@@ -34,64 +45,93 @@
   <article class="article-content">
     <div class="container">
 
-      <p>We spent $50K experimenting with LLM automation. Some workflows saved 100+ hours per month. Others were expensive failures that produced gibberish.</p>
+      <nav class="article-toc">
+        <details>
+          <summary>Table of Contents</summary>
+          <ol>
+            <li><a href="#hype-vs-reality">The AI Automation Hype vs Reality</a></li>
+            <li><a href="#support-triage">Automation 1: Customer Support Triage</a></li>
+            <li><a href="#contract-review">Automation 2: Contract Review</a></li>
+            <li><a href="#multi-agent">Automation 3: Multi-Agent with CrewAI</a></li>
+            <li><a href="#when-not">When NOT to Use LLM Automation</a></li>
+            <li><a href="#cost-benefit">Cost-Benefit Analysis Framework</a></li>
+            <li><a href="#frameworks">LangChain vs CrewAI vs Custom</a></li>
+            <li><a href="#best-practices">Production Best Practices</a></li>
+            <li><a href="#prompt-template">Prompt Engineering for Automation</a></li>
+            <li><a href="#results">The Results: Overall Impact</a></li>
+          </ol>
+        </details>
+      </nav>
 
-      <p>The hype says "AI will automate everything." Reality is messier. LLMs excel at some tasks and fail spectacularly at others.</p>
+      <div class="what-youll-learn">
+        <h3>What You'll Learn</h3>
+        <ul>
+          <li>Three real LLM automations with code, costs, and results</li>
+          <li>When LLMs work well vs. when they fail</li>
+          <li>How to calculate ROI before building an automation</li>
+          <li>LangChain vs CrewAI vs custom — which framework to pick</li>
+          <li>Production best practices: retries, caching, cost monitoring</li>
+        </ul>
+      </div>
 
-      <p>After building 15+ LLM-powered automations in production, here's what actually works - and what doesn't.</p>
+      <p>We spent $50K testing LLM automation. Some workflows saved 100+ hours per month. Others were expensive failures that produced gibberish.</p>
 
-      <h2>The AI Automation Hype vs Reality</h2>
+      <p>The hype says "AI will automate everything." Reality is messier. LLMs handle some tasks well and fail badly at others.</p>
 
-      <p>Every vendor promises "AI will replace your entire workflow." Here's the truth:</p>
+      <p>After building 15+ LLM-powered automations for production, here is what works and what does not.</p>
+
+      <h2 id="hype-vs-reality">The AI Automation Hype vs Reality</h2>
+
+      <p>Every vendor promises "AI will replace your entire workflow." Here is what we actually found.</p>
 
       <div class="diagram">
         <p class="diagram-title">LLM Automation: Where It Works vs Fails</p>
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <table class="article-table">
           <thead>
-            <tr style="border-bottom: 2px solid var(--primary);">
-              <th style="text-align: left; padding: 10px;">Task Type</th>
-              <th style="text-align: left; padding: 10px;">Works Well</th>
-              <th style="text-align: left; padding: 10px;">Fails</th>
+            <tr>
+              <th>Task Type</th>
+              <th>Works Well</th>
+              <th>Fails</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>Text transformation</strong></td>
-              <td style="padding: 10px;">✅ Summarization, translation, formatting</td>
-              <td style="padding: 10px;">❌ Preserving exact factual accuracy</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>Data extraction</strong></td>
-              <td style="padding: 10px;">✅ Structured data from unstructured text</td>
-              <td style="padding: 10px;">❌ 100% recall on edge cases</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>Classification</strong></td>
-              <td style="padding: 10px;">✅ Intent detection, sentiment analysis</td>
-              <td style="padding: 10px;">❌ High-precision requirements</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>Code generation</strong></td>
-              <td style="padding: 10px;">✅ Boilerplate, tests, documentation</td>
-              <td style="padding: 10px;">❌ Complex business logic</td>
+            <tr>
+              <td><strong>Text transformation</strong></td>
+              <td>Summarization, translation, formatting</td>
+              <td>Preserving exact factual accuracy</td>
             </tr>
             <tr>
-              <td style="padding: 10px;"><strong>Decision making</strong></td>
-              <td style="padding: 10px;">✅ Recommendations with human review</td>
-              <td style="padding: 10px;">❌ Autonomous high-stakes decisions</td>
+              <td><strong>Data extraction</strong></td>
+              <td>Structured data from unstructured text</td>
+              <td>100% recall on edge cases</td>
+            </tr>
+            <tr>
+              <td><strong>Classification</strong></td>
+              <td>Intent detection, sentiment analysis</td>
+              <td>High-precision requirements</td>
+            </tr>
+            <tr>
+              <td><strong>Code generation</strong></td>
+              <td>Boilerplate, tests, documentation</td>
+              <td>Complex business logic</td>
+            </tr>
+            <tr>
+              <td><strong>Decision making</strong></td>
+              <td>Recommendations with human review</td>
+              <td>Autonomous high-stakes decisions</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <h2>Real-World Automation #1: Customer Support Triage</h2>
+      <h2 id="support-triage">Real-World Automation #1: Customer Support Triage</h2>
 
-      <p>Our support team received 500+ tickets/day. 40% were duplicates or FAQ questions that didn't need human attention.</p>
+      <p>Our support team received 500+ tickets per day. About 40% were duplicates or FAQ questions. Those tickets did not need a human at all.</p>
 
       <p><strong>The Problem:</strong></p>
       <ul>
-        <li>Support agents spent 30% of time routing tickets</li>
-        <li>Misrouted tickets caused delays (frontend issues sent to backend team)</li>
+        <li>Support agents spent 30% of their time routing tickets</li>
+        <li>Misrouted tickets caused delays (frontend issues sent to the backend team)</li>
         <li>Simple questions waited hours for agent availability</li>
       </ul>
 
@@ -103,7 +143,7 @@
           <div class="arch-layer">
             <div class="arch-layer-title">1. Ticket Ingestion</div>
             <div class="arch-layer-desc">
-              User submits ticket → Webhook to automation system
+              User submits ticket &rarr; Webhook to automation system
             </div>
           </div>
           <div class="arch-layer">
@@ -116,21 +156,24 @@
             <div class="arch-layer-title">3. Knowledge Base Search</div>
             <div class="arch-layer-desc">
               Vector search (Pinecone) finds relevant KB articles<br>
-              If confidence > 80%, auto-respond with article
+              If confidence &gt; 80%, auto-respond with article
             </div>
           </div>
           <div class="arch-layer">
             <div class="arch-layer-title">4. Human Handoff</div>
             <div class="arch-layer-desc">
-              Complex issues → Route to appropriate team with context summary
+              Complex issues &rarr; Route to appropriate team with context summary
             </div>
           </div>
         </div>
       </div>
 
-      <p><strong>Implementation (LangChain + GPT-4):</strong></p>
+      <p><strong>Implementation with LangChain (a Python framework for building LLM-powered applications) and GPT-4:</strong></p>
 
-      <pre><code>from langchain.chat_models import ChatOpenAI
+      <details>
+        <summary>Python — Ticket classification with LangChain</summary>
+        <div class="code-block-wrapper">
+          <pre><code>from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 
@@ -164,23 +207,51 @@ async def classify_ticket(ticket_content: str):
         await route_to_agent(ticket_content, result)
 
     return result</code></pre>
+          <button class="copy-btn">Copy</button>
+        </div>
+      </details>
 
       <p><strong>Results:</strong></p>
       <ul>
-        <li><strong>40% of tickets auto-resolved</strong>: FAQ questions answered instantly</li>
-        <li><strong>Routing accuracy: 92%</strong>: Correct team on first try (was 70% with rule-based)</li>
-        <li><strong>Response time: 15min → 30 seconds</strong> for FAQ questions</li>
-        <li><strong>Agent productivity: +35%</strong>: Agents focus on complex issues</li>
+        <li><strong>40% of tickets auto-resolved</strong> &mdash; FAQ questions answered instantly</li>
+        <li><strong>Routing accuracy: 92%</strong> &mdash; Correct team on first try (was 70% with rule-based routing)</li>
+        <li><strong>Response time: 15 min down to 30 seconds</strong> for FAQ questions</li>
+        <li><strong>Agent productivity: +35%</strong> &mdash; Agents focus on complex issues instead</li>
         <li><strong>Cost: $800/month</strong> in API calls (vs $12K/month for another support agent)</li>
       </ul>
 
-      <h2>Real-World Automation #2: Contract Review</h2>
+      <div class="playground">
+        <div class="playground-header">Try It Yourself — Ticket Classification Prompt</div>
+        <pre><code>You are a customer support ticket classifier.
 
-      <p>Legal team reviewed 100+ vendor contracts per month. Each review took 2-3 hours to extract key terms.</p>
+Classify this ticket into:
+- Category: billing / technical / account / general
+- Urgency: low / medium / high / critical
+- Summary: one sentence describing the issue
+- Confidence: 0.0 to 1.0
+
+Rules:
+- If the ticket mentions "urgent", "ASAP", or "down",
+  set urgency to high or critical
+- If you're unsure about the category, set confidence below 0.7
+
+Return JSON only.
+
+Ticket: "{paste a support ticket here}"</code></pre>
+        <button class="copy-btn">Copy</button>
+        <div class="playground-hint">Paste a real or sample support ticket to see how classification works.</div>
+      </div>
+
+      <h2 id="contract-review">Real-World Automation #2: Contract Review</h2>
+
+      <p>Our legal team reviewed 100+ vendor contracts per month. Each review took 2 to 3 hours to extract key terms. Most of that time was repetitive reading.</p>
 
       <p><strong>The LLM Solution:</strong></p>
 
-      <pre><code>from langchain.document_loaders import PyPDFLoader
+      <details>
+        <summary>Python — Contract review with LangChain</summary>
+        <div class="code-block-wrapper">
+          <pre><code>from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import AnalyzeDocumentChain
 
@@ -227,28 +298,31 @@ async def extract_contract_terms(pdf_path: str):
     })
 
     return ContractExtraction.parse_raw(result["output_text"])</code></pre>
+          <button class="copy-btn">Copy</button>
+        </div>
+      </details>
 
       <p><strong>Human-in-the-Loop:</strong></p>
       <ul>
-        <li>LLM extracts terms → Legal reviews summary (15 min instead of 2 hours)</li>
-        <li>Red flags highlighted for attorney attention</li>
-        <li>Final approval always requires human lawyer</li>
+        <li>The LLM extracts terms first. Then a lawyer reviews the summary in 15 minutes instead of 2 hours.</li>
+        <li>Red flags are highlighted so the attorney can focus on what matters.</li>
+        <li>Final approval always requires a human lawyer. The LLM never makes the call.</li>
       </ul>
 
       <p><strong>Results:</strong></p>
       <ul>
-        <li><strong>Review time: 2 hours → 20 minutes</strong> (85% faster)</li>
+        <li><strong>Review time: 2 hours down to 20 minutes</strong> (85% faster)</li>
         <li><strong>Accuracy: 94%</strong> on key term extraction (spot-checked by lawyers)</li>
-        <li><strong>Cost: $4/contract</strong> in API calls</li>
-        <li><strong>ROI: 10x</strong> (saved 150 hours/month of legal time)</li>
+        <li><strong>Cost: $4 per contract</strong> in API calls</li>
+        <li><strong>ROI: 10x</strong> &mdash; saved 150 hours per month of legal time</li>
       </ul>
 
-      <h2>Real-World Automation #3: Agentic Workflow with CrewAI</h2>
+      <h2 id="multi-agent">Real-World Automation #3: Agentic Workflow with CrewAI</h2>
 
-      <p>Most impressive: Multi-agent systems where AI "agents" collaborate on complex tasks.</p>
+      <p>This was the most impressive result. We built agentic workflows (systems where multiple AI agents work together) for market research. CrewAI (a framework for building multi-agent AI systems) made this possible.</p>
 
       <p><strong>Use Case: Market Research Reports</strong></p>
-      <p>We needed weekly competitor analysis reports. Previously required 8 hours of analyst time.</p>
+      <p>We needed weekly competitor analysis reports. This used to take 8 hours of analyst time per report.</p>
 
       <p><strong>Multi-Agent Architecture:</strong></p>
 
@@ -281,7 +355,10 @@ async def extract_contract_terms(pdf_path: str):
 
       <p><strong>Implementation with CrewAI:</strong></p>
 
-      <pre><code>from crewai import Agent, Task, Crew
+      <details>
+        <summary>Python — Multi-agent system with CrewAI</summary>
+        <div class="code-block-wrapper">
+          <pre><code>from crewai import Agent, Task, Crew
 from langchain.tools import Tool
 
 # Define agents
@@ -346,59 +423,62 @@ crew = Crew(
 result = crew.kickoff(inputs={
     "competitors": ["Competitor A", "Competitor B", "Competitor C"]
 })</code></pre>
+          <button class="copy-btn">Copy</button>
+        </div>
+      </details>
 
       <p><strong>Results:</strong></p>
       <ul>
-        <li><strong>Time savings: 8 hours → 45 minutes</strong> (90% reduction)</li>
-        <li><strong>Quality: 7/10</strong> (requires 15 min human editing)</li>
-        <li><strong>Cost: $12/report</strong> (GPT-4 API calls)</li>
-        <li><strong>Frequency: Weekly → Daily</strong> (now feasible due to automation)</li>
+        <li><strong>Time savings: 8 hours down to 45 minutes</strong> (90% reduction)</li>
+        <li><strong>Quality: 7/10</strong> &mdash; requires 15 minutes of human editing</li>
+        <li><strong>Cost: $12 per report</strong> in GPT-4 API calls</li>
+        <li><strong>Frequency: Weekly to Daily</strong> &mdash; now feasible because of automation</li>
       </ul>
 
-      <h2>When NOT to Use LLM Automation</h2>
+      <h2 id="when-not">When NOT to Use LLM Automation</h2>
 
-      <p>We tried automating these and failed. Learn from our mistakes:</p>
+      <p>We tried automating these tasks and failed. Learn from our mistakes.</p>
 
       <div class="diagram">
         <p class="diagram-title">Failed Automation Attempts</p>
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <table class="article-table">
           <thead>
-            <tr style="border-bottom: 2px solid var(--primary);">
-              <th style="text-align: left; padding: 10px;">Task</th>
-              <th style="text-align: left; padding: 10px;">Why It Failed</th>
-              <th style="text-align: left; padding: 10px;">Better Approach</th>
+            <tr>
+              <th>Task</th>
+              <th>Why It Failed</th>
+              <th>Better Approach</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>Financial calculations</strong></td>
-              <td style="padding: 10px;">LLMs hallucinate numbers</td>
-              <td style="padding: 10px;">Use traditional code + LLM for explanation</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>Legal compliance checks</strong></td>
-              <td style="padding: 10px;">Can't guarantee 100% accuracy</td>
-              <td style="padding: 10px;">Rule-based checks + LLM for flagging edge cases</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>Automated customer refunds</strong></td>
-              <td style="padding: 10px;">Too high stakes for LLM errors</td>
-              <td style="padding: 10px;">LLM proposes → Human approves</td>
+            <tr>
+              <td><strong>Financial calculations</strong></td>
+              <td>LLMs hallucinate numbers</td>
+              <td>Use traditional code + LLM for explanation</td>
             </tr>
             <tr>
-              <td style="padding: 10px;"><strong>Code deployment decisions</strong></td>
-              <td style="padding: 10px;">LLMs lack system context</td>
-              <td style="padding: 10px;">Keep human in deployment loop</td>
+              <td><strong>Legal compliance checks</strong></td>
+              <td>Can't guarantee 100% accuracy</td>
+              <td>Rule-based checks + LLM for flagging edge cases</td>
+            </tr>
+            <tr>
+              <td><strong>Automated customer refunds</strong></td>
+              <td>Too high stakes for LLM errors</td>
+              <td>LLM proposes, human approves</td>
+            </tr>
+            <tr>
+              <td><strong>Code deployment decisions</strong></td>
+              <td>LLMs lack system context</td>
+              <td>Keep human in deployment loop</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <p><strong>Rule of thumb:</strong> LLMs are great for 80-90% accuracy tasks where humans verify. They're terrible for 100% accuracy requirements.</p>
+      <p><strong>Rule of thumb:</strong> LLMs work well for tasks where 80-90% accuracy is fine and humans verify the rest. They are terrible when you need 100% accuracy.</p>
 
-      <h2>Cost-Benefit Analysis Framework</h2>
+      <h2 id="cost-benefit">Cost-Benefit Analysis Framework</h2>
 
-      <p>Should you automate a task with LLMs? Use this framework:</p>
+      <p>Should you automate a task with LLMs? Use this framework to decide.</p>
 
       <div class="diagram">
         <p class="diagram-title">LLM Automation Decision Framework</p>
@@ -421,7 +501,7 @@ result = crew.kickoff(inputs={
             <div class="arch-layer-title">3. Calculate Time Savings</div>
             <div class="arch-layer-desc">
               Assume 70-80% reduction (LLMs rarely eliminate 100%)<br>
-              Example: 40 hours → 10 hours (75% savings)
+              Example: 40 hours &rarr; 10 hours (75% savings)
             </div>
           </div>
           <div class="arch-layer">
@@ -436,44 +516,44 @@ result = crew.kickoff(inputs={
 
       <p><strong>Decision Criteria:</strong></p>
       <ul>
-        <li><strong>Payback < 6 months</strong>: Strong candidate for automation</li>
-        <li><strong>Payback 6-12 months</strong>: Consider if task is painful or error-prone</li>
-        <li><strong>Payback > 12 months</strong>: Probably not worth automating yet</li>
+        <li><strong>Payback under 6 months:</strong> Strong candidate for automation.</li>
+        <li><strong>Payback 6 to 12 months:</strong> Consider it if the task is painful or error-prone.</li>
+        <li><strong>Payback over 12 months:</strong> Probably not worth automating yet.</li>
       </ul>
 
-      <h2>LangChain vs CrewAI vs Custom: Which Framework?</h2>
+      <h2 id="frameworks">LangChain vs CrewAI vs Custom: Which Framework?</h2>
 
-      <p>We've built with all three. Here's the honest comparison:</p>
+      <p>We built automations with all three frameworks. Here is an honest comparison based on our experience.</p>
 
       <div class="diagram">
         <p class="diagram-title">LLM Framework Comparison</p>
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <table class="article-table">
           <thead>
-            <tr style="border-bottom: 2px solid var(--primary);">
-              <th style="text-align: left; padding: 10px;">Framework</th>
-              <th style="text-align: left; padding: 10px;">Best For</th>
-              <th style="text-align: left; padding: 10px;">Pros</th>
-              <th style="text-align: left; padding: 10px;">Cons</th>
+            <tr>
+              <th>Framework</th>
+              <th>Best For</th>
+              <th>Pros</th>
+              <th>Cons</th>
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>LangChain</strong></td>
-              <td style="padding: 10px;">Single-agent workflows, RAG</td>
-              <td style="padding: 10px;">Mature, extensive tools, good docs</td>
-              <td style="padding: 10px;">Overly abstracted, steep learning curve</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #ddd;">
-              <td style="padding: 10px;"><strong>CrewAI</strong></td>
-              <td style="padding: 10px;">Multi-agent collaboration</td>
-              <td style="padding: 10px;">Simple API, agent orchestration</td>
-              <td style="padding: 10px;">Young project, limited tooling</td>
+            <tr>
+              <td><strong>LangChain</strong></td>
+              <td>Single-agent workflows, RAG (Retrieval-Augmented Generation &mdash; giving AI answers from your documents)</td>
+              <td>Mature, extensive tools, good docs</td>
+              <td>Overly abstracted, steep learning curve</td>
             </tr>
             <tr>
-              <td style="padding: 10px;"><strong>Custom (OpenAI SDK)</strong></td>
-              <td style="padding: 10px;">Simple, specific use cases</td>
-              <td style="padding: 10px;">Full control, no magic abstraction</td>
-              <td style="padding: 10px;">More code to write, no pre-built tools</td>
+              <td><strong>CrewAI</strong></td>
+              <td>Multi-agent collaboration</td>
+              <td>Simple API, agent orchestration</td>
+              <td>Young project, limited tooling</td>
+            </tr>
+            <tr>
+              <td><strong>Custom (OpenAI SDK)</strong></td>
+              <td>Simple, specific use cases</td>
+              <td>Full control, no magic abstraction</td>
+              <td>More code to write, no pre-built tools</td>
             </tr>
           </tbody>
         </table>
@@ -481,23 +561,29 @@ result = crew.kickoff(inputs={
 
       <p><strong>Our recommendation:</strong></p>
       <ul>
-        <li><strong>Start simple</strong>: Use OpenAI SDK directly for first project</li>
-        <li><strong>Add LangChain</strong>: When you need RAG (retrieval-augmented generation) or chains</li>
-        <li><strong>Try CrewAI</strong>: For complex multi-step workflows requiring agent collaboration</li>
+        <li><strong>Start simple:</strong> Use the OpenAI SDK directly for your first project.</li>
+        <li><strong>Add LangChain:</strong> When you need RAG or chained prompts.</li>
+        <li><strong>Try CrewAI:</strong> For complex multi-step workflows that need agent collaboration.</li>
       </ul>
 
-      <h2>Production Best Practices</h2>
+      <h2 id="best-practices">Production Best Practices</h2>
 
-      <p>LLMs in production are different from demos. These practices saved us from disasters:</p>
+      <p>Running LLMs in production is different from demos. These practices saved us from real disasters.</p>
 
       <p><strong>1. Always Set Temperature=0 for Consistency</strong></p>
-      <pre><code>llm = ChatOpenAI(
+      <div class="code-block-wrapper">
+        <pre><code>llm = ChatOpenAI(
     model="gpt-4",
     temperature=0  # Deterministic outputs for production
 )</code></pre>
+        <button class="copy-btn">Copy</button>
+      </div>
 
       <p><strong>2. Implement Retry Logic with Exponential Backoff</strong></p>
-      <pre><code>from tenacity import retry, stop_after_attempt, wait_exponential
+      <details open>
+        <summary>Python — Retry with exponential backoff</summary>
+        <div class="code-block-wrapper">
+          <pre><code>from tenacity import retry, stop_after_attempt, wait_exponential
 
 @retry(
     stop=stop_after_attempt(3),
@@ -505,16 +591,25 @@ result = crew.kickoff(inputs={
 )
 async def call_llm_with_retry(prompt: str):
     return await llm.ainvoke(prompt)</code></pre>
+          <button class="copy-btn">Copy</button>
+        </div>
+      </details>
 
       <p><strong>3. Use Structured Outputs (JSON Mode)</strong></p>
-      <pre><code>response = client.chat.completions.create(
+      <div class="code-block-wrapper">
+        <pre><code>response = client.chat.completions.create(
     model="gpt-4",
     messages=[{"role": "user", "content": prompt}],
     response_format={"type": "json_object"}  # Forces JSON output
 )</code></pre>
+        <button class="copy-btn">Copy</button>
+      </div>
 
       <p><strong>4. Monitor Costs in Real-Time</strong></p>
-      <pre><code>from langchain.callbacks import get_openai_callback
+      <details>
+        <summary>Python — Real-time cost monitoring</summary>
+        <div class="code-block-wrapper">
+          <pre><code>from langchain.callbacks import get_openai_callback
 
 with get_openai_callback() as cb:
     result = chain.invoke(input_data)
@@ -529,21 +624,30 @@ with get_openai_callback() as cb:
     # Alert if cost spike
     if cb.total_cost > COST_THRESHOLD:
         alert_team("High LLM cost detected")</code></pre>
+          <button class="copy-btn">Copy</button>
+        </div>
+      </details>
 
       <p><strong>5. Cache Responses for Repeated Queries</strong></p>
-      <pre><code>from langchain.cache import RedisCache
+      <div class="code-block-wrapper">
+        <pre><code>from langchain.cache import RedisCache
 
 # Cache identical prompts for 1 hour
 langchain.llm_cache = RedisCache(redis_url="redis://localhost:6379")
 
 # Subsequent identical calls = instant + free
 result = llm.invoke("same prompt")  # Cache hit</code></pre>
+        <button class="copy-btn">Copy</button>
+      </div>
 
-      <h2>Prompt Engineering for Automation</h2>
+      <h2 id="prompt-template">Prompt Engineering for Automation</h2>
 
-      <p>Production prompts need structure. Here's our template:</p>
+      <p>Production prompts need clear structure. Without it, LLM outputs are unpredictable. Here is the template we use for every automation.</p>
 
-      <pre><code>system_prompt = """
+      <details open>
+        <summary>Python — Production prompt template</summary>
+        <div class="code-block-wrapper">
+          <pre><code>system_prompt = """
 You are a {role}.
 Your goal: {goal}
 Your constraints:
@@ -565,64 +669,93 @@ Now process this input:
 # 3. Constraints (what NOT to do)
 # 4. Output format (JSON schema)
 # 5. Few-shot examples</code></pre>
+          <button class="copy-btn">Copy</button>
+        </div>
+      </details>
 
-      <h2>The Results: Overall Impact</h2>
+      <div class="playground">
+        <div class="playground-header">Try It Yourself — Automation Prompt Template</div>
+        <pre><code>You are a {role}.
+Your goal: {goal}
 
-      <p>After 12 months of LLM automation:</p>
+Constraints:
+- Only use information from the provided input
+- Never make up facts
+- If unsure, say "I need more information"
+- {add your own constraints}
+
+Output format (JSON):
+{
+  "result": "your output here",
+  "confidence": 0.0,
+  "reasoning": "brief explanation"
+}
+
+Examples:
+Input: {example_input}
+Output: {example_output}
+
+Now process this input:
+"{paste your input here}"</code></pre>
+        <button class="copy-btn">Copy</button>
+        <div class="playground-hint">Fill in the role, goal, and constraints for your automation use case.</div>
+      </div>
+
+      <h2 id="results">The Results: Overall Impact</h2>
+
+      <p>After 12 months of LLM automation, here is what we measured across all workflows.</p>
 
       <ul>
         <li><strong>Time savings: 350 hours/month</strong> across 15 automated workflows</li>
         <li><strong>Cost: $6,500/month</strong> in API calls + $120K one-time development</li>
-        <li><strong>ROI: 4.2x</strong> in first year (savings vs investment)</li>
-        <li><strong>Quality: 85-95%</strong> accuracy on most tasks (acceptable with human review)</li>
-        <li><strong>Failed experiments: 40%</strong> of ideas didn't work (that's OK)</li>
+        <li><strong>ROI: 4.2x</strong> in the first year (savings vs investment)</li>
+        <li><strong>Quality: 85-95% accuracy</strong> on most tasks (acceptable with human review)</li>
+        <li><strong>Failed experiments: 40%</strong> of ideas did not work (and that is OK)</li>
       </ul>
 
-      <p>Most importantly: Team now focuses on high-value work instead of repetitive tasks.</p>
+      <p>The biggest win was not just time. The team now focuses on high-value work instead of repetitive tasks.</p>
 
       <h2>Key Takeaways</h2>
 
       <ol>
-        <li><strong>LLMs excel at text transformation</strong>: Summarization, extraction, classification work well.</li>
-        <li><strong>Human-in-the-loop is mandatory</strong>: 90% accuracy isn't enough for autonomous decisions.</li>
-        <li><strong>Calculate ROI before building</strong>: Many automations aren't worth the development cost.</li>
-        <li><strong>Start simple, iterate</strong>: Don't build complex multi-agent systems on day 1.</li>
-        <li><strong>Monitor costs religiously</strong>: LLM APIs can get expensive fast.</li>
-        <li><strong>Structured outputs > free text</strong>: JSON mode prevents parsing headaches.</li>
+        <li><strong>LLMs excel at text transformation.</strong> Summarization, extraction, and classification all work well.</li>
+        <li><strong>Human-in-the-loop is mandatory.</strong> 90% accuracy is not enough for autonomous decisions.</li>
+        <li><strong>Calculate ROI before building.</strong> Many automations are not worth the development cost.</li>
+        <li><strong>Start simple, then iterate.</strong> Do not build complex multi-agent systems on day one.</li>
+        <li><strong>Monitor costs religiously.</strong> LLM APIs can get expensive fast without guardrails.</li>
+        <li><strong>Structured outputs beat free text.</strong> JSON mode with Pydantic (a Python library for data validation) prevents parsing headaches.</li>
       </ol>
 
-      <h2>Further Reading & Resources</h2>
+      <h2>Further Reading &amp; Resources</h2>
 
-      <p><strong>Frameworks & Tools:</strong></p>
+      <p><strong>Frameworks &amp; Tools:</strong></p>
       <ul>
-        <li><a href="https://python.langchain.com/" target="_blank">LangChain</a> - Most popular LLM framework</li>
-        <li><a href="https://www.crewai.com/" target="_blank">CrewAI</a> - Multi-agent orchestration</li>
+        <li><a href="https://python.langchain.com/" target="_blank">LangChain</a> &mdash; Most popular LLM framework</li>
+        <li><a href="https://www.crewai.com/" target="_blank">CrewAI</a> &mdash; Multi-agent orchestration</li>
         <li><a href="https://platform.openai.com/docs/" target="_blank">OpenAI API Documentation</a></li>
-        <li><a href="https://www.anthropic.com/api" target="_blank">Anthropic Claude API</a> - Alternative to GPT-4</li>
+        <li><a href="https://www.anthropic.com/api" target="_blank">Anthropic Claude API</a> &mdash; Alternative to GPT-4</li>
       </ul>
 
       <p><strong>Learning Resources:</strong></p>
       <ul>
-        <li><a href="https://learn.deeplearning.ai/langchain" target="_blank">DeepLearning.AI: LangChain Course</a> - Free course by Andrew Ng</li>
-        <li><a href="https://github.com/langchain-ai/langchain/tree/master/cookbook" target="_blank">LangChain Cookbook</a> - Real-world examples</li>
+        <li><a href="https://learn.deeplearning.ai/langchain" target="_blank">DeepLearning.AI: LangChain Course</a> &mdash; Free course by Andrew Ng</li>
+        <li><a href="https://github.com/langchain-ai/langchain/tree/master/cookbook" target="_blank">LangChain Cookbook</a> &mdash; Real-world examples</li>
         <li><a href="https://www.anthropic.com/index/prompt-engineering-interactive-tutorial" target="_blank">Anthropic Prompt Engineering Guide</a></li>
       </ul>
 
       <p><strong>Cost Management:</strong></p>
       <ul>
         <li><a href="https://openai.com/pricing" target="_blank">OpenAI Pricing Calculator</a></li>
-        <li><a href="https://helicone.ai/" target="_blank">Helicone</a> - LLM observability and cost tracking</li>
-        <li><a href="https://lunary.ai/" target="_blank">Lunary</a> - LLM analytics and monitoring</li>
+        <li><a href="https://helicone.ai/" target="_blank">Helicone</a> &mdash; LLM observability and cost tracking</li>
+        <li><a href="https://lunary.ai/" target="_blank">Lunary</a> &mdash; LLM analytics and monitoring</li>
       </ul>
 
-      <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
+      <p>LLM automation is powerful but not magic. The key is picking the right problems. Start with one workflow, measure the results, and grow from there.</p>
 
-      <p><em>LLM automation is powerful but not magic. The key is knowing which problems are LLM-shaped and which aren't.</em></p>
-
-      <p><em>Building LLM-powered automations? <a href="../index.html#contact">Let's discuss your use cases</a>.</em></p>
+      <p>I share AI automation tips and real-world examples on LinkedIn. Follow me there, or <a href="../index.html#contact" style="color: var(--primary);">reach out directly</a>.</p>
 
       <div class="back-to-blog">
-        <a href="../blog.html">← Back to all articles</a>
+        <a href="../blog.html">&larr; Back to all articles</a>
       </div>
 
     </div>
@@ -630,7 +763,17 @@ Now process this input:
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2026 Dinesh Saini</p>
+      <div class="footer-links">
+        <a href="../index.html">Home</a>
+        <span class="sep">&middot;</span>
+        <a href="../blog.html">Writing</a>
+        <span class="sep">&middot;</span>
+        <a href="https://www.linkedin.com/in/imdineshsaini" target="_blank" rel="noopener" class="linkedin-follow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Follow on LinkedIn
+        </a>
+      </div>
+      <p style="margin-top: 12px; font-size: 0.82rem; color: var(--text-muted);">&copy; 2026 Dinesh Saini</p>
     </div>
   </footer>
 
