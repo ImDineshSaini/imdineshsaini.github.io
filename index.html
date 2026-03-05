@@ -3,441 +3,469 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dinesh Saini — Software Architect | AI &amp; Cloud | Banking Technology</title>
-  <meta name="description" content="Dinesh Saini — Software Architect at SBS with 13+ years experience. Specializing in Digital Banking &amp; AI Innovation, Multi-Cloud (AWS, Azure), AI Engineering, Ruby &amp; Python, and enterprise-grade cloud-native systems in regulated banking environments.">
-  <meta name="keywords" content="Dinesh Saini, Software Architect, Digital Banking, AI Innovation, AI Engineering, LLM Orchestration, Enterprise RAG, AI Agents, Prompt Engineering, AWS, Azure, Multi-Cloud, Microservices, Ruby on Rails, Python, KYC, AML, DevSecOps, Domain-Driven Design">
-  <meta name="author" content="Dinesh Saini">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://imdineshsaini.github.io">
-  <meta name="theme-color" content="#C15F3C">
+  <title>Dinesh Saini — We've Moved!</title>
+  <meta name="description" content="Dinesh Saini's website has moved to dineshksaini.com">
+  <meta http-equiv="refresh" content="15;url=https://dineshksaini.com">
+  <link rel="canonical" href="https://dineshksaini.com">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Dinesh Saini — Software Architect | AI &amp; Cloud Solutions">
-  <meta property="og:description" content="Software Architect with 13+ years designing enterprise-grade, cloud-native systems in regulated banking environments. Digital Banking &amp; AI Innovation at SBS.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://imdineshsaini.github.io">
-  <meta property="og:site_name" content="Dinesh Saini">
-  <meta property="og:locale" content="en_US">
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Dinesh Saini — Software Architect | AI &amp; Cloud Solutions">
-  <meta name="twitter:description" content="Software Architect @SBS | Digital Banking &amp; AI Innovation | Ex-Oracle | Multi-Cloud (AWS, Azure) | AI Engineering | Ruby &amp; Python">
-
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"ProfilePage","mainEntity":{"@type":"Person","@id":"https://imdineshsaini.github.io/#dinesh-saini","name":"Dinesh Saini","jobTitle":"Consultant Architect","description":"Software Architect with 13+ years of experience designing enterprise-grade, cloud-native systems in regulated banking environments. Digital Banking &amp; AI Innovation at SBS.","url":"https://imdineshsaini.github.io","sameAs":["https://www.linkedin.com/in/imdineshsaini/","https://github.com/ImDineshSaini"],"knowsAbout":["Software Architecture","Digital Banking","AI Innovation","AI Engineering","LLM Orchestration","Enterprise RAG","AI Agents","Prompt Engineering","Multi-Cloud Computing","AWS","Azure","Microservices","Ruby on Rails","Python","KYC","AML","ID Legitimation","DevSecOps","Domain-Driven Design","Event-Driven Architecture"],"alumniOf":[{"@type":"CollegeOrUniversity","name":"BITS Pilani"},{"@type":"CollegeOrUniversity","name":"Dr. A.P.J. Abdul Kalam Technical University"}],"worksFor":{"@type":"Organization","name":"SBS"}}}
-  </script>
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebSite","name":"Dinesh Saini — Portfolio","url":"https://imdineshsaini.github.io"}
-  </script>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="themes.css">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #1a1814;
+      --surface: #23201b;
+      --text: #e8e4dc;
+      --text-muted: #9e9a90;
+      --accent: #d97757;
+      --accent-glow: rgba(217, 119, 87, 0.3);
+      --green: #788c5d;
+      --blue: #6a9bcc;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated background */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 300px; height: 300px;
+      background: var(--accent);
+      top: -80px; left: -60px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 250px; height: 250px;
+      background: var(--blue);
+      bottom: -60px; right: -40px;
+      animation-delay: -3s;
+    }
+
+    .orb-3 {
+      width: 200px; height: 200px;
+      background: var(--green);
+      top: 50%; left: 60%;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -20px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    /* Grain texture */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* Main content */
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 640px;
+      padding: 40px 24px;
+    }
+
+    /* Animated arrow icon */
+    .icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px; height: 80px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid rgba(217, 119, 87, 0.2);
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s ease-out both;
+      position: relative;
+    }
+
+    .icon-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 24px;
+      background: var(--accent-glow);
+      filter: blur(16px);
+      opacity: 0;
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 0.6; }
+    }
+
+    .icon-wrap svg {
+      color: var(--accent);
+      animation: bounce-arrow 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce-arrow {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(6px); }
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: rgba(217, 119, 87, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(217, 119, 87, 0.25);
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s ease-out 0.1s both;
+    }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      animation: fadeUp 0.8s ease-out 0.2s both;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-family: 'Lora', serif;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      animation: fadeUp 0.8s ease-out 0.3s both;
+    }
+
+    /* New URL display */
+    .new-url {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid rgba(217, 119, 87, 0.2);
+      border-radius: 12px;
+      padding: 14px 24px;
+      margin-bottom: 32px;
+      font-size: 1rem;
+      color: var(--text);
+      animation: fadeUp 0.8s ease-out 0.4s both;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .new-url:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .new-url .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .new-url code {
+      font-family: 'Poppins', monospace;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* CTA button */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+      animation: fadeUp 0.8s ease-out 0.5s both;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+      background: #e08565;
+    }
+
+    .cta-btn:active {
+      transform: translateY(0);
+    }
+
+    .cta-btn svg {
+      transition: transform 0.3s;
+    }
+
+    .cta-btn:hover svg {
+      transform: translateX(4px);
+    }
+
+    /* Countdown */
+    .countdown {
+      margin-top: 28px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      animation: fadeUp 0.8s ease-out 0.6s both;
+    }
+
+    .countdown strong {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Confetti canvas */
+    #confetti {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      text-align: center;
+      padding: 16px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      animation: fadeUp 0.8s ease-out 0.7s both;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Particles */
+    .particle {
+      position: fixed;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      animation: sparkle 4s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: translateY(0) scale(0); }
+      50% { opacity: 0.8; transform: translateY(-40px) scale(1); }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Grain overlay -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
   <div class="grain" aria-hidden="true"></div>
 
-  <!-- Navigation -->
-  <nav class="nav" id="nav">
-    <div class="container nav-inner">
-      <a href="#" class="nav-logo">dinesh<span>saini</span></a>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="#about">About</a></li>
-        <li><a href="#experience">Experience</a></li>
-        <li><a href="#expertise">Expertise</a></li>
-        <li><a href="#architecture">Architecture</a></li>
-        <li><a href="#impact">Impact</a></li>
-        <li><a href="#articles">Writing</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
+  <canvas id="confetti"></canvas>
+
+  <div class="container">
+    <div class="icon-wrap">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
     </div>
-  </nav>
 
-  <!-- Hero -->
-  <header class="hero" id="hero">
-    <div class="hero-bg">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="orb orb-3"></div>
+    <div class="badge">New Home</div>
+
+    <h1>I've moved to a <span>new place!</span></h1>
+
+    <p class="subtitle">
+      Hey there! My portfolio has a brand new home with a fresh design, better performance, and all the latest updates. Come check it out!
+    </p>
+
+    <div class="new-url">
+      <span class="dot"></span>
+      <code>dineshksaini.com</code>
+      <span style="color: var(--green); font-size: 0.8rem; font-weight: 500;">Live</span>
     </div>
-    <div class="container hero-inner">
-      <div class="hero-content">
-        <p class="hero-label anim-fade">Software Architect</p>
-        <h1 class="hero-name anim-fade">Dinesh Saini</h1>
-        <p class="hero-desc anim-fade">I design <em>enterprise-grade, cloud-native</em> systems in regulated banking environments — driving LLM orchestration, Enterprise RAG, intelligent agents, and advanced prompt engineering to build scalable, secure, and intelligent platforms.</p>
-        <div class="hero-chips anim-fade">
-          <span class="chip">LLM / ERAG</span>
-          <span class="chip">AI Agents</span>
-          <span class="chip">Microservices</span>
-          <span class="chip">AWS &middot; Azure</span>
-          <span class="chip">Ruby &middot; Python</span>
-          <span class="chip">KYC &middot; AML</span>
-        </div>
-        <div class="hero-actions anim-fade">
-          <a href="resume.html" class="btn btn-warm">Download Resume</a>
-          <a href="#contact" class="btn btn-ghost">Get in Touch</a>
-        </div>
-      </div>
-      <div class="hero-visual anim-fade">
-        <svg class="arch-svg" viewBox="0 0 400 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- AI Layer -->
-          <rect x="20" y="10" width="360" height="68" rx="12" fill="#d97757" fill-opacity="0.12" stroke="#d97757" stroke-opacity="0.4"/>
-          <text x="200" y="38" text-anchor="middle" fill="#d97757" font-family="Poppins,sans-serif" font-size="11" font-weight="600" letter-spacing="1">AI / LLM / RAG / AGENTS</text>
-          <text x="200" y="58" text-anchor="middle" fill="#5a5850" font-family="Lora,serif" font-size="10">Prompt Engineering &middot; MR Review Agent &middot; Agile AI Tool</text>
-          <!-- Microservices Layer -->
-          <rect x="20" y="92" width="360" height="68" rx="12" fill="#788c5d" fill-opacity="0.12" stroke="#788c5d" stroke-opacity="0.4"/>
-          <text x="200" y="120" text-anchor="middle" fill="#788c5d" font-family="Poppins,sans-serif" font-size="11" font-weight="600" letter-spacing="1">MICROSERVICES</text>
-          <text x="200" y="140" text-anchor="middle" fill="#5a5850" font-family="Lora,serif" font-size="10">Ruby on Rails &middot; Python &middot; Event-Driven &middot; API Gateway</text>
-          <!-- Cloud Layer -->
-          <rect x="20" y="174" width="360" height="68" rx="12" fill="#6a9bcc" fill-opacity="0.12" stroke="#6a9bcc" stroke-opacity="0.4"/>
-          <text x="200" y="202" text-anchor="middle" fill="#6a9bcc" font-family="Poppins,sans-serif" font-size="11" font-weight="600" letter-spacing="1">MULTI-CLOUD</text>
-          <text x="200" y="222" text-anchor="middle" fill="#5a5850" font-family="Lora,serif" font-size="10">AWS &middot; Azure &middot; Oracle Cloud &middot; Docker &middot; CI/CD</text>
-          <!-- Banking Layer -->
-          <rect x="20" y="256" width="360" height="68" rx="12" fill="#C15F3C" fill-opacity="0.1" stroke="#C15F3C" stroke-opacity="0.35"/>
-          <text x="200" y="284" text-anchor="middle" fill="#C15F3C" font-family="Poppins,sans-serif" font-size="11" font-weight="600" letter-spacing="1">DIGITAL BANKING</text>
-          <text x="200" y="304" text-anchor="middle" fill="#5a5850" font-family="Lora,serif" font-size="10">KYC &middot; AML &middot; ID Legitimation &middot; Onboarding &middot; Compliance</text>
-          <!-- Connecting lines -->
-          <line x1="200" y1="78" x2="200" y2="92" stroke="#b0aea5" stroke-opacity="0.3" stroke-dasharray="4 3"/>
-          <line x1="200" y1="160" x2="200" y2="174" stroke="#b0aea5" stroke-opacity="0.3" stroke-dasharray="4 3"/>
-          <line x1="200" y1="242" x2="200" y2="256" stroke="#b0aea5" stroke-opacity="0.3" stroke-dasharray="4 3"/>
-        </svg>
-      </div>
-    </div>
-  </header>
 
-  <!-- About -->
-  <section class="section" id="about">
-    <div class="container">
-      <h2 class="section-title">About</h2>
-      <p class="section-lead">13+ years designing enterprise-grade, cloud-native systems — from full-stack engineering to architectural leadership in regulated banking environments.</p>
-      <div class="about-grid">
-        <div class="about-text">
-          <p>At <strong>SBS</strong>, I design the microservices architecture behind a digital banking suite used by 6 banks worldwide, covering onboarding, KYC, ID Legitimation, and AML compliance. I also set up an <strong>Engineering AI Hub</strong> where we built code review agents and LLM-powered tools that brought development effort down by 30%.</p>
-          <p>Before SBS, I spent time at <strong>Oracle</strong>, <strong>Persistent Systems</strong>, and <strong>Zapbuild</strong>, where I picked up hands-on experience with distributed systems, containerized deployments using <strong>Docker</strong> and <strong>Kubernetes</strong>, and cloud platforms like <strong>AWS</strong>, <strong>Azure</strong>, and <strong>OCI</strong>.</p>
-          <p>I enjoy breaking down complex problems into clean, scalable services and working closely with product and business teams to ship solutions that actually work in production.</p>
-        </div>
-        <div class="about-cards">
-          <div class="stat-card"><span class="stat-num">13+</span><span class="stat-label">Years in Tech</span></div>
-          <div class="stat-card stat-accent"><span class="stat-num">30%</span><span class="stat-label">SDLC Effort Reduced</span></div>
-          <div class="stat-card"><span class="stat-num">3</span><span class="stat-label">Cloud Platforms</span><span class="stat-sub">AWS &middot; Azure &middot; OCI</span></div>
-          <div class="stat-card"><span class="stat-num">6+</span><span class="stat-label">Organizations</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <br>
 
-  <!-- Experience -->
-  <section class="section section-alt" id="experience">
-    <div class="container">
-      <h2 class="section-title">Experience</h2>
-      <p class="section-lead">From engineering to architectural leadership across banking and enterprise technology.</p>
-      <div class="timeline">
+    <a href="https://dineshksaini.com" class="cta-btn" id="cta">
+      Visit New Site
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </a>
 
-        <article class="tl-item">
-          <div class="tl-dot active"></div>
-          <div class="tl-card">
-            <div class="tl-head">
-              <div><h3>Consultant Architect</h3><p class="tl-company">SBS</p></div>
-              <time>Jan 2025 — Present</time>
-            </div>
-            <p class="tl-desc">Architecting cutting-edge solutions for digital banking, emphasizing innovation and efficiency.</p>
-            <ul>
-              <li>Designing the full platform architecture for a digital banking suite serving <strong>6 global banks</strong> across onboarding, KYC, ID Legitimation, and AML compliance</li>
-              <li>Established the <strong>Engineering AI Hub</strong> delivering AI agent frameworks, LLM orchestration, and RAG pipelines adopted by 30+ developers</li>
-              <li>Built an <strong>AI Code Review Agent</strong> reducing review effort by 20%, and an AI-driven project intelligence platform cutting SDLC effort by 30%</li>
-              <li>Driving event-driven architecture and DevSecOps practices to enhance system reliability across <strong>AWS and Azure</strong></li>
-            </ul>
-            <div class="tl-tags"><span>Microservices</span><span>Docker</span><span>Kubernetes</span><span>AI/LLM</span><span>Event-Driven</span><span>DevSecOps</span></div>
-          </div>
-        </article>
+    <p class="countdown">
+      Auto-redirecting in <strong id="timer">15</strong> seconds
+    </p>
+  </div>
 
-        <article class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-card">
-            <div class="tl-head">
-              <div><h3>Engineering Project Lead</h3><p class="tl-company">SBS</p></div>
-              <time>Jul 2021 — Dec 2024</time>
-            </div>
-            <p class="tl-desc">Led engineering delivery for banking onboarding platforms within a distributed microservices ecosystem.</p>
-            <ul>
-              <li>Designed high-level and low-level architecture for <strong>Ruby on Rails</strong> and <strong>Python</strong>-based microservices handling 30K+ daily transactions</li>
-              <li>Delivered scalable onboarding components supporting regulatory-compliant <strong>KYC/AML</strong> workflows for global bank clients</li>
-              <li>Established coding standards, CI/CD pipelines, and architecture review practices across the engineering team</li>
-              <li>Improved system reliability and performance through cloud-native design patterns on <strong>Docker and Kubernetes</strong></li>
-            </ul>
-            <div class="tl-tags"><span>Ruby on Rails</span><span>Python</span><span>System Design</span><span>Docker</span><span>Kubernetes</span><span>CI/CD</span></div>
-          </div>
-        </article>
-
-        <article class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-card">
-            <div class="tl-head">
-              <div><h3>Senior Developer Engineer (SD3)</h3><p class="tl-company">Oracle</p></div>
-              <time>Mar 2019 — Jul 2021</time>
-            </div>
-            <p class="tl-desc">Led engineering efforts for BidContender and Aconex, supporting millions of users in high-volume document management.</p>
-            <ul>
-              <li>Designed and scaled <strong>Ruby on Rails</strong> applications on <strong>Oracle Cloud Infrastructure</strong> for optimal performance across 30+ countries</li>
-              <li>Architected high-availability systems for large-scale document storage, indexing, and search capabilities</li>
-            </ul>
-            <div class="tl-tags"><span>Oracle Cloud</span><span>Ruby on Rails</span><span>High Availability</span><span>Document Management</span></div>
-          </div>
-        </article>
-
-        <article class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-card">
-            <div class="tl-head">
-              <div><h3>Module Lead</h3><p class="tl-company">Persistent Systems</p></div>
-              <time>Sep 2016 — Mar 2019</time>
-            </div>
-            <p class="tl-desc">Analyzed and designed innovative solutions while leading engineering efforts across energy and cloud platforms.</p>
-            <ul>
-              <li>Led 6 engineers on <strong>AutoGrid</strong> energy platform and <strong>IBM Cloud Brokerage</strong>, shipping 5 major releases</li>
-              <li>Drove adoption of best practices in code health, testing, and cloud deployment across cross-functional teams</li>
-              <li>Migrated legacy applications to <strong>AWS</strong> with Docker, improving infrastructure efficiency by 25%</li>
-            </ul>
-            <div class="tl-tags"><span>AWS</span><span>Docker</span><span>Ruby on Rails</span><span>Cloud Migration</span><span>Testing</span></div>
-          </div>
-        </article>
-
-        <article class="tl-item">
-          <div class="tl-dot"></div>
-          <div class="tl-card">
-            <div class="tl-head">
-              <div><h3>Software Engineer</h3><p class="tl-company">Zapbuild</p></div>
-              <time>Jul 2012 — May 2016</time>
-            </div>
-            <p class="tl-desc">Developed high-volume data processing systems and full-stack web applications from intern to engineer.</p>
-            <ul>
-              <li>Built data pipelines and client-facing applications using <strong>Ruby on Rails</strong>, PHP, PostgreSQL, and Magento</li>
-              <li>Delivered 8+ projects spanning e-commerce, data processing, and custom business solutions</li>
-              <li>Gained hands-on experience with <strong>AWS</strong> infrastructure, website optimization, and performance tuning</li>
-            </ul>
-            <div class="tl-tags"><span>Ruby on Rails</span><span>PHP</span><span>PostgreSQL</span><span>e-Commerce</span><span>AWS</span></div>
-          </div>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Expertise -->
-  <section class="section" id="expertise">
-    <div class="container">
-      <h2 class="section-title">Technical Expertise</h2>
-      <div class="expertise-grid">
-        <div class="exp-card">
-          <div class="exp-icon" style="--accent:#d97757">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9l2.83-2.83"/></svg>
-          </div>
-          <h3>AI &amp; Intelligent Systems</h3>
-          <div class="exp-tags"><span>LLM Orchestration</span><span>Enterprise RAG (ERAG)</span><span>AI Agents</span><span>Generative AI</span><span>Prompt Engineering</span><span>GitHub Copilot</span><span>AI Code Review</span></div>
-        </div>
-        <div class="exp-card">
-          <div class="exp-icon" style="--accent:#788c5d">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          </div>
-          <h3>Architecture &amp; Design</h3>
-          <div class="exp-tags"><span>Microservices</span><span>System Design (HLD/LLD)</span><span>Cloud-Native</span><span>Event-Driven</span><span>API-First</span><span>DDD</span><span>CQRS</span></div>
-        </div>
-        <div class="exp-card">
-          <div class="exp-icon" style="--accent:#6a9bcc">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-          </div>
-          <h3>Multi-Cloud &amp; DevSecOps</h3>
-          <div class="exp-tags"><span>AWS</span><span>Microsoft Azure</span><span>Oracle Cloud</span><span>Docker</span><span>Kubernetes</span><span>CI/CD</span><span>DevSecOps</span><span>Cloud Security</span></div>
-        </div>
-        <div class="exp-card">
-          <div class="exp-icon" style="--accent:#C15F3C">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </div>
-          <h3>Languages &amp; Frameworks</h3>
-          <div class="exp-tags"><span>Ruby on Rails</span><span>Python</span><span>JavaScript / Node.js</span><span>SQL &amp; NoSQL</span><span>REST &amp; GraphQL</span><span>Redis</span></div>
-        </div>
-        <div class="exp-card">
-          <div class="exp-icon" style="--accent:#d97757">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          </div>
-          <h3>Banking &amp; FinTech</h3>
-          <div class="exp-tags"><span>Digital Banking Suite</span><span>KYC</span><span>AML</span><span>ID Legitimation</span><span>Onboarding</span><span>Regulatory Compliance</span><span>Payments</span></div>
-        </div>
-        <div class="exp-card">
-          <div class="exp-icon" style="--accent:#788c5d">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3>Leadership &amp; Strategy</h3>
-          <div class="exp-tags"><span>Architecture Governance</span><span>AI Skill Development</span><span>Agile / Scrum</span><span>Technical Mentoring</span><span>Technology Strategy</span><span>Performance Optimization</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Architecture Highlights -->
-  <section class="section section-alt" id="architecture">
-    <div class="container">
-      <h2 class="section-title">Architecture Highlights</h2>
-      <p class="section-lead">Platforms and systems I have designed and shipped.</p>
-      <div class="arch-grid">
-
-        <div class="arch-card featured">
-          <span class="badge badge-warm">Current Focus</span>
-          <h3>Digital Banking Suite (DBS)</h3>
-          <p class="arch-org">SBS</p>
-          <p>A digital banking platform used by 6 global banks for customer onboarding, KYC, ID Legitimation, and AML compliance. Built as 8 microservices running on Docker and Kubernetes across AWS and Azure, processing 50K+ verifications monthly.</p>
-          <div class="arch-details">
-            <div><strong>Architecture</strong> Microservices, Event-Driven, API Gateway</div>
-            <div><strong>Compliance</strong> KYC, AML, ID Legitimation, GDPR</div>
-            <div><strong>Stack</strong> Ruby on Rails, Python, AWS, Azure</div>
-          </div>
-        </div>
-
-        <div class="arch-card featured">
-          <span class="badge badge-green">Innovation</span>
-          <h3>Engineering AI Hub</h3>
-          <p class="arch-org">SBS</p>
-          <p>An in-house initiative where we built 3 AI agent frameworks now used by 30+ developers. The code review agent cut review time by 20%, and a project intelligence tool brought SDLC effort down by 30%.</p>
-          <div class="arch-details">
-            <div><strong>AI Tools</strong> Code Review Agent, Project Intelligence, LLM Orchestration</div>
-            <div><strong>Impact</strong> 20% review effort + 30% SDLC effort reduction</div>
-            <div><strong>Stack</strong> Python, LLM APIs, Enterprise RAG, AI Agents</div>
-          </div>
-        </div>
-
-        <div class="arch-card">
-          <h3>IBM Cloud Brokerage</h3>
-          <p class="arch-org">Persistent Systems</p>
-          <p>A multi-cloud brokerage platform that helps enterprise clients manage infrastructure and orchestrate services across cloud providers.</p>
-        </div>
-
-        <div class="arch-card">
-          <h3>AutoGrid Energy Platform</h3>
-          <p class="arch-org">Persistent Systems</p>
-          <p>An energy platform for managing distributed generation, storage, and demand response. Built with Ruby on Rails for real-time grid optimization.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Impact -->
-  <section class="section" id="impact">
-    <div class="container">
-      <h2 class="section-title">Measurable Impact</h2>
-      <div class="impact-grid">
-        <div class="impact-card">
-          <span class="impact-num">30%</span>
-          <strong>SDLC Effort Reduced</strong>
-          <p>Project intelligence tool from the Engineering AI Hub that streamlines the development lifecycle.</p>
-        </div>
-        <div class="impact-card">
-          <span class="impact-num">20%</span>
-          <strong>Code Review Effort Reduced</strong>
-          <p>AI-powered code review agent that automates review workflows across engineering teams.</p>
-        </div>
-        <div class="impact-card">
-          <span class="impact-num">AI Hub</span>
-          <strong>Engineering AI Hub Founded</strong>
-          <p>3 AI agent frameworks built in-house, now used by 30+ developers across the organization.</p>
-        </div>
-        <div class="impact-card">
-          <span class="impact-num">3</span>
-          <strong>Cloud Platforms Mastered</strong>
-          <p>Production systems on AWS, Azure, and Oracle Cloud — true multi-cloud enterprise strategy.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Articles -->
-  <section class="section section-alt" id="articles">
-    <div class="container">
-      <h2 class="section-title">Writing</h2>
-      <p class="section-lead">On technology, leadership, and responsible AI in enterprise systems.</p>
-      <div class="articles-grid">
-        <article class="art-card">
-          <time>February 2026</time>
-          <h3><a href="articles/prompt-engineering-mastery.html" style="color: inherit; text-decoration: none;">Prompt Engineering Mastery: Getting LLMs to Do What You Want</a></h3>
-          <p>After building dozens of LLM-powered features in production, I've learned the patterns that actually work. From few-shot prompting to chain-of-thought reasoning...</p>
-        </article>
-        <article class="art-card">
-          <time>January 2026</time>
-          <h3><a href="articles/ai-automation-workflows.html" style="color: inherit; text-decoration: none;">AI Automation Workflows: When to Automate vs Keep Manual</a></h3>
-          <p>We automated code reviews with GPT-4. It saved 10 hours per week—until it started suggesting jQuery in our React codebase. Here's what actually works...</p>
-        </article>
-        <article class="art-card">
-          <time>November 2025</time>
-          <h3><a href="articles/event-driven-architecture.html" style="color: inherit; text-decoration: none;">Event-Driven Architecture: Why Everything Doesn't Need to Be Synchronous</a></h3>
-          <p>The day we moved from synchronous API calls to event-driven messaging, our system felt like it could breathe again. Response times dropped, failures became isolated...</p>
-        </article>
-      </div>
-      <div class="text-center" style="margin-top: 40px;">
-        <a href="blog.html" class="btn btn-primary">View All 20 Articles →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Education -->
-  <section class="section" id="education">
-    <div class="container">
-      <h2 class="section-title">Education &amp; Certifications</h2>
-      <div class="edu-grid">
-        <div class="edu-col">
-          <h3 class="edu-heading">Education</h3>
-          <div class="edu-item"><h4>M.Tech, Computer Software Engineering</h4><p>BITS Pilani</p></div>
-          <div class="edu-item"><h4>B.Tech, Information Technology</h4><p>Dr. A.P.J. Abdul Kalam Technical University</p></div>
-        </div>
-        <div class="edu-col">
-          <h3 class="edu-heading">Certifications</h3>
-          <div class="edu-item"><h4>OCI Architect Associate</h4><p>Oracle</p></div>
-          <div class="edu-item"><h4>OCI Foundations Certified Associate</h4><p>Oracle</p></div>
-          <div class="edu-item"><h4>Verified International Qualifications</h4><p>World Education Services</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact -->
-  <section class="section section-alt" id="contact">
-    <div class="container contact-inner">
-      <h2 class="section-title">Let's Connect</h2>
-      <p class="section-lead">Open to discussing architecture, AI integration, and technology leadership.</p>
-      <div class="contact-links">
-        <a href="https://www.linkedin.com/in/imdineshsaini/" target="_blank" rel="noopener noreferrer" class="cta-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          LinkedIn
-        </a>
-        <a href="https://github.com/ImDineshSaini" target="_blank" rel="noopener noreferrer" class="cta-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-          GitHub
-        </a>
-        <a href="resume.html" class="cta-link">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          Resume
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
   <footer class="footer">
-    <div class="container">
-      <p>&copy; 2026 Dinesh Saini &middot; Software Architect &middot; Digital Banking &amp; AI Innovation &middot; Multi-Cloud &middot; Ruby &amp; Python</p>
-    </div>
+    &copy; 2026 Dinesh Saini &middot; Now at <a href="https://dineshksaini.com">dineshksaini.com</a>
   </footer>
 
-  <script src="script.js"></script>
+  <script>
+    // Countdown timer
+    (function() {
+      let seconds = 15;
+      const timerEl = document.getElementById('timer');
+      const interval = setInterval(() => {
+        seconds--;
+        if (timerEl) timerEl.textContent = seconds;
+        if (seconds <= 0) {
+          clearInterval(interval);
+          window.location.href = 'https://dineshksaini.com';
+        }
+      }, 1000);
+    })();
+
+    // Floating particles
+    (function() {
+      const colors = ['#d97757', '#788c5d', '#6a9bcc', '#e8e4dc'];
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.top = Math.random() * 100 + 'vh';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.animationDelay = (Math.random() * 4) + 's';
+        p.style.animationDuration = (3 + Math.random() * 3) + 's';
+        p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+        document.body.appendChild(p);
+      }
+    })();
+
+    // Confetti burst on CTA click
+    (function() {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      let animating = false;
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      function createParticles(x, y) {
+        const colors = ['#d97757', '#788c5d', '#6a9bcc', '#e8e4dc', '#C15F3C', '#FFD700'];
+        for (let i = 0; i < 60; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 3 + Math.random() * 6;
+          particles.push({
+            x, y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 2,
+            size: 3 + Math.random() * 5,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            life: 1,
+            decay: 0.01 + Math.random() * 0.02,
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 10
+          });
+        }
+        if (!animating) {
+          animating = true;
+          animate();
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.15;
+          p.life -= p.decay;
+          p.rotation += p.rotSpeed;
+          if (p.life <= 0) { particles.splice(i, 1); return; }
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation * Math.PI / 180);
+          ctx.globalAlpha = p.life;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+        });
+        if (particles.length > 0) {
+          requestAnimationFrame(animate);
+        } else {
+          animating = false;
+        }
+      }
+
+      document.getElementById('cta').addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      });
+    })();
+  </script>
 </body>
 </html>
